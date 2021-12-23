@@ -16,12 +16,3 @@
 
 **您必须在下载后的24小时内从计算机或手机中完全删除以上内容.**  </br>
 > ***您使用或者复制了本仓库且本人制作的任何脚本，则视为`已接受`此声明，请仔细阅读***
-
-## 多谢
-
-## 框架关键词：
-## .net core,Quartz,EntityFrameWork,Dapper,vue,iview,layui。
-
-# 功能说明：https://docs.qq.com/doc/DR0RtZ211cnhZaFJC
-# 安装教程：https://docs.qq.com/doc/DR3ZScGFSd1lFdWV3
-# 常见问题：https://docs.qq.com/doc/DR05JalZ4T1hrTElW

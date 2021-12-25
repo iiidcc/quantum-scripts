@@ -162,8 +162,9 @@ module.exports.allEnvs = async (key, envType, enable, qlPanelId) => {
  * @param {any} name 环境变量名称，全匹配 允许空
  * @param {any} key 环境变量值，模糊匹配 允许空
  * @param {any} envType 环境变量类型 允许空
+ * @param {any} userId  环境变量用户id 允许空
  */
-module.exports.getEnvs = async (name, key, envType) => {
+module.exports.getEnvs = async (name, key, envType,userId) => {
     const body = await api({
         url: 'api/env/Query',
         method: 'get',
@@ -171,6 +172,7 @@ module.exports.getEnvs = async (name, key, envType) => {
             key: key,
             name: name,
             envType: envType,
+            userId: userId,
             t: Date.now(),
         },
         headers: {

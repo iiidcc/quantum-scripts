@@ -1,4 +1,5 @@
 require('./env.js');
+const moment = require('moment');
 const {
     addEnvs, getEnvs, sendNotify, allEnvs, getQLPanels, getQLEnvs, deleteQLEnvs, addQLEnvs, syncEnv
 } = require('./quantum');
@@ -75,6 +76,7 @@ let notifyMessage = "";
                                 Value: qlenv.value,
                                 Name: qlenv.name,
                                 Enable: true,
+                                UpdateTime: moment(qlenv.timestamp).format("yyyy-MM-dd HH:mm:ss"),
                                 Remark: qlenv.remarks,
                                 EnvType: 2,
                                 Weight: 0,

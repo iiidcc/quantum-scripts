@@ -25,7 +25,7 @@ let i = 0;
         if (cookiesArr[i]) {
             cookie = cookiesArr[i];
             $.pt_pin = (cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]);
-            $.UserName = decodeURIComponent($.pt_pin);
+            $.UserName = decodeURIComponent(cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]);
             $.CryptoJS = $.isNode() ? require('crypto-js') : CryptoJS;
             $.index = i + 1;
             $.errorMsg = '';

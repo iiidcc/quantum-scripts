@@ -62,12 +62,10 @@ const api = got.extend({
             envs.push({
                 Name: "JD_COOKIE",
                 Enable: true,
-                UserRemark: ck.nickname,
                 Value: `pt_key=${ck.PTKey};pt_pin=${ck.PTPin};`,
                 Remark: ck.Remark,
                 Weight: ck.Priority,
                 UserId: ck.QQ,
-                UpdateTime: ck.UpdateTime,
                 EnvType: 2
             })
         }
@@ -81,6 +79,4 @@ const api = got.extend({
     } else {
         console.log(jdCookies.Message);
     }
-})().catch((e) => {
-    console.log("同步qqbot CK 失败：" + JSON.stringify(e));
-});
+})();

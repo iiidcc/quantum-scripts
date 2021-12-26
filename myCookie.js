@@ -4,8 +4,12 @@ const {
     sendNotify, getEnvs
 } = require('./quantum');
 
-let user_id = process.env.user_id || '179100150'; //用户id
+let user_id = process.env.user_id; //用户id
 !(async () => {
+    if (!user_id) {
+        return;
+    }
+    console.log("user_id:" + user_id);
     var cks = await getEnvs("JD_COOKIE", "pt_key", 2, user_id)
     var message = `您一共绑定了${cks.length}个狗东：`;
     console.log(message);
@@ -26,4 +30,3 @@ let user_id = process.env.user_id || '179100150'; //用户id
 })().catch((e) => {
     console.log(e);
 });
-

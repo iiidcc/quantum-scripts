@@ -45,6 +45,12 @@ const { addEnvs, getEnvs, sendNotify
         console.log("NVJDCStart：" + NVJDCStart);
         console.log("Phone：" + Phone);
         console.log("VerifyCode：" + VerifyCode);
+        if (!NVJDC_URL) {
+            var t = "未配置NVJDC_URL环境变量，无法使用短信登陆服务。";
+            console.log(t);
+            await sendNotify(t);
+            return;
+        }
         if (Phone && VerifyCode) {
             var message = `手机号${Phone}，短信验证码：${VerifyCode}`
             console.log(message)

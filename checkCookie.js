@@ -34,7 +34,6 @@ const { disableEnvs, sendNotify
             console.log(`开始检测【京东账号${$.index}】${$.UserName2} ....\n`);
             await TotalBean();
             if ($.NoReturn) {
-                console.log($.NoReturn);
                 await isLoginByX1a0He();
             } else {
                 if ($.isLogin) {
@@ -54,7 +53,7 @@ const { disableEnvs, sendNotify
                 }
             } else {
                 if ($.isLogin) {
-                    console.log("CK有效")
+                    console.log("CK有效✅")
                     //系统自动执行时，CK有效不通知
                     if (!IsSystem) {
                         var beanNum = ($.beanNum && $.beanNum > 0) ? "\r剩余豆豆：" + $.beanNum : "";
@@ -63,12 +62,11 @@ const { disableEnvs, sendNotify
                 }
                 else {
                     console.log(cookie + "失效！")
-                    await sendNotify(`东东障号：${$.UserName2}，失效❌！
-请重新获取CK后提交。`)
+                    await sendNotify(`东东障号：${$.UserName2}，失效❌！`)
                     if (CK_Failure_Notify == "True") {
                         await sendNotify(`东东障号：${$.UserName2}，失效❌！`, true)
                     }
-                    console.log(cookie + "自动禁用失效COOKIE！")
+                    console.log(cookie + "自动禁用失效COOKIE❌！")
                     await disableEnvs([cookie]);
                 }
             }
@@ -149,10 +147,7 @@ function isLoginByX1a0He() {
                 if (data) {
                     data = JSON.parse(data);
                     if (data.islogin === "1") {
-                        console.log("isLoginByX1a0He 验证已登录！")
-                        $.isLogin = true;
                     } else if (data.islogin === "0") {
-                        console.log("isLoginByX1a0He 验证未登录！")
                         $.isLogin = false;
                     } else {
                         $.error = `${$.nickName} :` + `使用X1a0He写的接口加强检测: 未知返回...\n`

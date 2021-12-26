@@ -1,5 +1,4 @@
 require('./env.js');
-const moment = require('moment');
 const {
     addEnvs, getEnvs, sendNotify, allEnvs, getQLPanels, getQLEnvs, deleteQLEnvs, addQLEnvs, syncEnv
 } = require('./quantum');
@@ -29,10 +28,10 @@ let notifyMessage = "";
         console.log("没青龙容器,不同步.");
         return;
     }
-    if (commonEnvs.length == 0 && userEnvs.length == 0) {
-        console.log("没环境变量,不同步.");
-        return;
-    }
+    // if (commonEnvs.length == 0 && userEnvs.length == 0) {
+    //     console.log("没环境变量,不同步.");
+    //     return;
+    // }
     //新增或者更新的CK
     var newCKs = [];
 
@@ -76,7 +75,6 @@ let notifyMessage = "";
                                 Value: qlenv.value,
                                 Name: qlenv.name,
                                 Enable: true,
-                                UpdateTime: moment(qlenv.timestamp).format("yyyy-MM-dd HH:mm:ss"),
                                 Remark: qlenv.remarks,
                                 EnvType: 2,
                                 Weight: 0,

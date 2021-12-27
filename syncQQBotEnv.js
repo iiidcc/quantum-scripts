@@ -64,6 +64,7 @@ const api = got.extend({
                 Enable: true,
                 Value: `pt_key=${ck.PTKey};pt_pin=${ck.PTPin};`,
                 Remark: ck.Remark,
+                UserRemark: ck.nickname,
                 Weight: ck.Priority,
                 UserId: ck.QQ,
                 EnvType: 2

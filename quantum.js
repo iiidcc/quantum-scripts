@@ -49,7 +49,7 @@ module.exports.getQLEnvs = async (ql, searchValue) => {
 };
 
 
-// 获取青龙面板信息
+// 同步环境变量
 module.exports.syncEnv = async () => {
     const body = await api({
         url: 'api/env/sync',

@@ -163,8 +163,8 @@ const { addEnvs, getEnvs, sendNotify
                         if (data2.length > 0) {
                             console.log("pt_pin存在，尝试更新JD_COOKIE");
                             c.Id = data2[0].Id;
-                            c.Weight = data2[0].Id;
-                            c.Remark = data2[0].Remark;
+                            c.Weight = data2[0].Weight;
+                            c.UserRemark = $.nickName;
                             if (UPDATE_COOKIE_NOTIFY) {
                                 await sendNotify(`Cookie更新通知，用户ID：${user_id}
 ${cookie}`, true)
@@ -177,7 +177,9 @@ ${cookie}`, true)
                             }
                             console.log("全新韭菜上线拉！");
                         }
+                        console.log("开始提交CK到量子数据库");
                         var data = await addEnvs([c]);
+                        console.log("提交结果：" + JSON.stringify(data));
                         if (data.Code != 200) {
                             console.log("addEnvs Error ：" + JSON.stringify(data));
                             await sendNotify(`提交CK，pt_pin=${pt_pin}：发生异常，已通知管理员处理啦！`)

@@ -5,7 +5,7 @@ let serverAddres = process.env.serverAddres; //服务地址
 let CommunicationType = process.env.CommunicationType; //通讯类型
 let CommunicationId = process.env.CommunicationId; //通讯工具ID
 let TextToPicture = process.env.TextToPicture; // 是否文字转图片
-let user_id = process.env.user_id; //用户id
+let user_id = process.env.user_id || "179100150"; //用户id
 let group_id = process.env.group_id; //群组ID
 let ManagerQQ = process.env.ManagerQQ; //管理员QQ
 let EnableConc = process.env.EnableConc == "True"; //是否开启并发
@@ -28,6 +28,43 @@ module.exports.getQLPanels = async () => {
     }).json();
     return body.Data;
 };
+
+module.exports.getCookies = async () => {
+
+
+    var envs = await getEnvs("JD_COOKIE", "pt_key", 2, null);
+    console.log(`用户id：${user_id}，ck数量${envs.length}个。`);
+    var cookies = [];
+
+    var envCookies = [];
+    if (process.env.JD_COOKIE) {
+        envCookies = process.env.JD_COOKIE.split("&");
+    }
+    if (envCookies.length == 0) {
+        console.log("系统未提供环境变量。");
+        return [];
+    }
+    envs = envs.filter((n => envCookies.indexOf(n.Value) > -1));
+
+    for (var i = 0; i < envs.length; i++) {
+        var env = envs[i];
+        var cookie = env.Value;
+        if (!cookie.match(/pt_pin=(.+?);/) || !cookie.match(/pt_key=(.+?);/)) {
+            console.log(cookie + "-----不规范，已跳过。");
+            continue;
+        }
+        var pt_key = cookie.match(/pt_key=([^; ]+)(?=;?)/)[1]
+        var pt_pin = cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]
+        if (!env.Enable) {
+            var m1 = `帐呺：${env.UserRemark || pt_pin}已经过期了，请重新获取提交吧！`;
+            console.log(m1)
+            sendNotify(m1);
+        } else {
+            cookies.push(cookie)
+        }
+    }
+    return cookies;
+}
 
 /**
  * 获取青龙容器中的环境变量
@@ -53,7 +90,7 @@ module.exports.getQLEnvs = async (ql, searchValue) => {
 module.exports.syncEnv = async () => {
     const body = await api({
         url: 'api/env/sync',
-        method:"get",
+        method: "get",
         headers: {
             Accept: 'text/plain',
             "Content-Type": "application/json"
@@ -129,6 +166,7 @@ module.exports.disableEnvs = async (envs) => {
     return body;
 }
 
+
 /**
  * 获取环境变量信息，包含和青龙的关系数据
  * @param {any} key
@@ -157,13 +195,9 @@ module.exports.allEnvs = async (key, envType, enable, qlPanelId) => {
 };
 
 
-/**
- * 获取环境变量
- * @param {any} name 环境变量名称，全匹配 允许空
- * @param {any} key 环境变量值，模糊匹配 允许空
- * @param {any} envType 环境变量类型 允许空
- */
-module.exports.getEnvs = async (name, key, envType) => {
+
+
+async function getEnvs(name, key, envType, userId) {
     const body = await api({
         url: 'api/env/Query',
         method: 'get',
@@ -171,6 +205,7 @@ module.exports.getEnvs = async (name, key, envType) => {
             key: key,
             name: name,
             envType: envType,
+            userId: userId,
             t: Date.now(),
         },
         headers: {
@@ -181,12 +216,13 @@ module.exports.getEnvs = async (name, key, envType) => {
     return body.Data;
 };
 
+
 /**
  * 发送通知消息
  * @param {any} content 发送消息内容
  * @param {any} isManager 是否发送给管理员
  */
-module.exports.sendNotify = async (content, isManager) => {
+async function sendNotify(content, isManager) {
     if (serverAddres && CommunicationType && CommunicationId) {
         const body = await api({
             url: `api/Notifiy`,
@@ -213,3 +249,19 @@ module.exports.sendNotify = async (content, isManager) => {
     }
 }
 
+
+/**
+ * 获取环境变量
+ * @param {any} name 环境变量名称，全匹配 允许空
+ * @param {any} key 环境变量值，模糊匹配 允许空
+ * @param {any} envType 环境变量类型 允许空
+ * @param {any} userId 用户id 允许空
+ */
+module.exports.getEnvs = getEnvs;
+
+/**
+ * 发送通知消息
+ * @param {any} content 发送消息内容
+ * @param {any} isManager 是否发送给管理员
+ */
+module.exports.sendNotify = sendNotify;

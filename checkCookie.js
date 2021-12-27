@@ -11,16 +11,12 @@ if (process.env.JD_COOKIE) {
 
 let CK_Failure_Notify = process.env.CK_Failure_Notify != "false"; //失效CK是否通知管理员
 
-const { disableEnvs, sendNotify
+const { disableEnvs, sendNotify, getCookies
 } = require('./quantum');
 
 
 !(async () => {
-    if (!cookiesArr[0] && !EnableConc) {
-        console.log("好像没有提交狗东CK？");
-        //await sendNotify('好像没有提交狗东CK？')
-        return;
-    }
+    var cookiesArr = await getCookies();
     for (let i = 0; i < cookiesArr.length; i++) {
         if (cookiesArr[i]) {
             cookie = cookiesArr[i];

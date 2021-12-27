@@ -1,14 +1,10 @@
 const $ = new Env('活动领取');
 require('./env.js');
-const { addEnvs, getEnvs, sendNotify
+const { addEnvs, getEnvs, sendNotify, getCookies
 } = require('./quantum');
 
 let EnableConc = process.env.EnableConc == "True"; //是否开启并发
 let cookiesArr = [], cookie = "";
-
-if (process.env.JD_COOKIE) {
-    cookiesArr = process.env.JD_COOKIE.split("&");
-}
 
 let allMessage2 = '';
 let allReceiveMessage = '';
@@ -17,10 +13,7 @@ const JD_API_HOST = 'https://api.m.jd.com/client.action';
 let i = 0;
 
 !(async () => {
-    if (!cookiesArr[0] && !EnableConc) {
-        await sendNotify("您还没有提交账号，请提交后再来吧！")
-        return;
-    }
+    cookiesArr = await getCookies();
     for (i = 0; i < cookiesArr.length; i++) {
         if (cookiesArr[i]) {
             cookie = cookiesArr[i];

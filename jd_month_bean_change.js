@@ -2,17 +2,12 @@
 const $ = new Env('京东月资产变动通知');
 
 require('./env.js');
-const { addEnvs, getEnvs, sendNotify
+const { sendNotify, getCookies
 } = require('./quantum');
 
 let EnableConc = process.env.EnableConc == "True"; //是否开启并发
 
-
 let cookiesArr = []
-if (process.env.JD_COOKIE) {
-    cookiesArr = process.env.JD_COOKIE.split("&");
-}
-
 let intPerSent = 1;
 
 if (process.env.BEANCHANGE_PERSENT) {
@@ -21,10 +16,12 @@ if (process.env.BEANCHANGE_PERSENT) {
 }
 var allMessage = "";
 !(async () => {
-    if (!cookiesArr[0] && !EnableConc) {
-        await sendNotify("您还没有提交账号，请提交后再来吧！")
-        return;
-    }
+
+    cookiesArr = await getCookies();
+    //if (!cookiesArr[0] && !EnableConc) {
+    //    await sendNotify("您还没有提交账号，请提交后再来吧！")
+    //    return;
+    //}
     for (let i = 0; i < cookiesArr.length; i++) {
         if (cookiesArr[i]) {
             cookie = cookiesArr[i];
@@ -51,7 +48,7 @@ var allMessage = "";
             if (intPerSent > 0) {
                 if ((i + 1) % intPerSent == 0) {
                     console.log("分段通知条件达成，处理发送通知....");
-                    if ( allMessage) {
+                    if (allMessage) {
                         await sendNotify(allMessage)
                     }
                     allMessage = "";

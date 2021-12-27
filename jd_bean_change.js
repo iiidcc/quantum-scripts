@@ -1,7 +1,7 @@
 const $ = new Env('京东资产变动');
 require('./env.js');
 const moment = require('moment');
-const { addEnvs, getEnvs, sendNotify
+const {  getEnvs, sendNotify, getCookies
 } = require('./quantum');
 
 let EnableConc = process.env.EnableConc == "True"; //是否开启并发
@@ -26,92 +26,85 @@ let RemainMessage = '';
 
 let user_id = process.env.user_id; //用户id
 !(async () => {
-    if (!cookiesArr[0] && !EnableConc) {
-        await sendNotify("您还没有提交账号，请提交后再来吧！")
-        return;
-    }
+    var cookiesArr = await getCookies();
     var cks = await getEnvs("JD_COOKIE", "pt_key", 2, user_id)
-    // await sendNotify("您一共有" + cookiesArr.length + "个账号\r查询任务正在执行中，请稍后！")
+    console.log("一共有" + cookiesArr.length + "个账号\r查询任务正在执行中，请稍后！")
     for (i = 0; i < cookiesArr.length; i++) {
-        if (cookiesArr[i]) {
-            cookie = cookiesArr[i];
-            $.overdue = "";
-
-            for (var i = 0; i < cks.length; i++) {
-                var ck = cks[i];
-                if (ck.Value == cookie) {
-                    var overdueDate = moment(ck.UpdateTime).add(30, 'days');
-                    var day = overdueDate.diff(new Date(), 'day');
-                    $.overdue = `【预计失效】${day}后，${moment(ck.UpdateTime).format("yyyy年MM月DD日")}失效。`
-                }
+        cookie = cookiesArr[i];
+        $.overdue = "";
+        for (var x = 0; x < cks.length; x++) {
+            var ck = cks[x];
+            if (ck.Value == cookie) {
+                var overdueDate = moment(ck.UpdateTime).add(30, 'days');
+                var day = overdueDate.diff(new Date(), 'day');
+                $.overdue = `【预计失效】${day}后，${moment(ck.UpdateTime).format("yyyy年MM月DD日")}失效。`
             }
-            $.pt_pin = (cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]);
-            $.UserName = decodeURIComponent(cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]);
-            $.CryptoJS = $.isNode() ? require('crypto-js') : CryptoJS;
-            $.index = i + 1;
-            $.beanCount = 0;
-            $.incomeBean = 0;
-            $.expenseBean = 0;
-            $.todayIncomeBean = 0;
-            $.todayOutcomeBean = 0;
-            $.errorMsg = '';
-            $.isLogin = true;
-            $.nickName = '';
-            $.levelName = '';
-            $.message = '';
-            $.balance = 0;
-            $.expiredBalance = 0;
-            $.JdzzNum = 0;
-            $.JdMsScore = 0;
-            $.JdFarmProdName = '';
-            $.JdtreeEnergy = 0;
-            $.JdtreeTotalEnergy = 0;
-            $.treeState = 0;
-            $.JdwaterTotalT = 0;
-            $.JdwaterD = 0;
-            $.JDwaterEveryDayT = 0;
-            $.JDtotalcash = 0;
-            $.JDEggcnt = 0;
-            $.Jxmctoken = '';
-            $.DdFactoryReceive = '';
-            $.jxFactoryInfo = '';
-            $.jxFactoryReceive = '';
-            $.jdCash = 0;
-            $.isPlusVip = 0;
-            $.JingXiang = "";
-
-            $.allincomeBean = 0; //月收入
-            $.allexpenseBean = 0; //月支出
-            $.joylevel = 0;
-            TempBaipiao = "";
-            console.log(`******开始查询【京东账号】${$.nickName || $.UserName}*********`);
-            await TotalBean();
-            await TotalBean2();
-            await getJoyBaseInfo();
-            await getJdZZ();
-            await getMs();
-            await jdfruitRequest('taskInitForFarm', {
-                "version": 14,
-                "channel": 1,
-                "babelChannel": "120"
-            });
-            await getjdfruit();
-            await cash();
-            await requestAlgo();
-            await JxmcGetRequest();
-            await bean();
-            await getJxFactory(); //京喜工厂
-            await showMsg();
-            if (intPerSent > 0) {
-                if ((i + 1) % intPerSent == 0) {
-                    console.log("分段通知条件达成，处理发送通知....");
-                    if ($.isNode() && allMessage) {
-                        await sendNotify(`${allMessage}`)
-                    }
-                    allMessage = "";
+        }
+        $.pt_pin = (cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]);
+        $.UserName = decodeURIComponent(cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]);
+        $.CryptoJS = $.isNode() ? require('crypto-js') : CryptoJS;
+        $.index = i + 1;
+        $.beanCount = 0;
+        $.incomeBean = 0;
+        $.expenseBean = 0;
+        $.todayIncomeBean = 0;
+        $.todayOutcomeBean = 0;
+        $.errorMsg = '';
+        $.isLogin = true;
+        $.nickName = '';
+        $.levelName = '';
+        $.message = '';
+        $.balance = 0;
+        $.expiredBalance = 0;
+        $.JdzzNum = 0;
+        $.JdMsScore = 0;
+        $.JdFarmProdName = '';
+        $.JdtreeEnergy = 0;
+        $.JdtreeTotalEnergy = 0;
+        $.treeState = 0;
+        $.JdwaterTotalT = 0;
+        $.JdwaterD = 0;
+        $.JDwaterEveryDayT = 0;
+        $.JDtotalcash = 0;
+        $.JDEggcnt = 0;
+        $.Jxmctoken = '';
+        $.DdFactoryReceive = '';
+        $.jxFactoryInfo = '';
+        $.jxFactoryReceive = '';
+        $.jdCash = 0;
+        $.isPlusVip = 0;
+        $.JingXiang = "";
+        $.allincomeBean = 0; //月收入
+        $.allexpenseBean = 0; //月支出
+        $.joylevel = 0;
+        TempBaipiao = "";
+        console.log(`******开始查询【京东账号】${$.nickName || $.UserName}*********`);
+        await TotalBean();
+        await TotalBean2();
+        await getJoyBaseInfo();
+        await getJdZZ();
+        await getMs();
+        await jdfruitRequest('taskInitForFarm', {
+            "version": 14,
+            "channel": 1,
+            "babelChannel": "120"
+        });
+        await getjdfruit();
+        await cash();
+        await requestAlgo();
+        await JxmcGetRequest();
+        await bean();
+        await getJxFactory(); //京喜工厂
+        await showMsg();
+        if (intPerSent > 0) {
+            if ((i + 1) % intPerSent == 0) {
+                console.log("分段通知条件达成，处理发送通知....");
+                if ($.isNode() && allMessage) {
+                    await sendNotify(`${allMessage}`)
                 }
-
+                allMessage = "";
             }
+
         }
     }
     //其他通知

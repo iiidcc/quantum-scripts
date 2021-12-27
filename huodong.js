@@ -3,7 +3,7 @@ const $ = new Env('活动进度');
 require('./env.js');
 let EnableConc = process.env.EnableConc == "True"; //是否开启并发
 
-const { addEnvs, getEnvs, sendNotify
+const { addEnvs, getEnvs, sendNotify, getCookies
 } = require('./quantum');
 
 let allMessage = '';
@@ -16,19 +16,9 @@ if (process.env.BEANCHANGE_PERSENT) {
     console.log(`检测到设定了分段通知:` + intPerSent);
 }
 
-
-let cookiesArr = []
-if (process.env.JD_COOKIE) {
-    cookiesArr = process.env.JD_COOKIE.split("&");
-}
-
 const JD_API_HOST = 'https://api.m.jd.com/client.action';
 !(async () => {
-    if (!cookiesArr[0] && !EnableConc) {
-        console.log("好像没有提交狗东CK？");
-        await sendNotify('好像没有提交狗东CK？')
-        return;
-    }
+    cookiesArr = await getCookies();
     for (let i = 0; i < cookiesArr.length; i++) {
         if (cookiesArr[i]) {
             cookie = cookiesArr[i];
@@ -70,7 +60,7 @@ const JD_API_HOST = 'https://api.m.jd.com/client.action';
                 if ((i + 1) % intPerSent == 0) {
                     console.log("分段通知条件达成，处理发送通知....");
                     if ($.isNode() && allMessage) {
-                        notify.sendNotify(allMessage)
+                        await sendNotify(allMessage)
                     }
                     allMessage = "";
                 }
@@ -78,7 +68,7 @@ const JD_API_HOST = 'https://api.m.jd.com/client.action';
         }
     }
     if ($.isNode() && allMessage) {
-        notify.sendNotify(allMessage)
+        await sendNotify(allMessage)
     }
 })()
     .catch((e) => {

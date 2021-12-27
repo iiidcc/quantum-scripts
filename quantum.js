@@ -1,7 +1,7 @@
 ﻿
 const got = require('got');
 //------------- 量子助手系统环境变量部分 -------------
-let serverAddres = process.env.serverAddres; //服务地址
+let serverAddres = process.env.serverAddres || 'http://localhost:5088'; //服务地址
 let CommunicationType = process.env.CommunicationType; //通讯类型
 let CommunicationId = process.env.CommunicationId; //通讯工具ID
 let TextToPicture = process.env.TextToPicture; // 是否文字转图片
@@ -30,8 +30,6 @@ module.exports.getQLPanels = async () => {
 };
 
 module.exports.getCookies = async () => {
-
-
     var envs = await getEnvs("JD_COOKIE", "pt_key", 2, null);
     console.log(`用户id：${user_id}，ck数量${envs.length}个。`);
     var cookies = [];
@@ -60,7 +58,7 @@ module.exports.getCookies = async () => {
             console.log(m1)
             sendNotify(m1);
         } else {
-            cookies.push(cookie)
+            cookies.push(env)
         }
     }
     return cookies;
@@ -194,9 +192,6 @@ module.exports.allEnvs = async (key, envType, enable, qlPanelId) => {
     return body.Data.Data;
 };
 
-
-
-
 async function getEnvs(name, key, envType, userId) {
     const body = await api({
         url: 'api/env/Query',
@@ -207,6 +202,8 @@ async function getEnvs(name, key, envType, userId) {
             envType: envType,
             userId: userId,
             t: Date.now(),
+            PageIndex: 1,
+            PageSize: 999999999
         },
         headers: {
             Accept: 'text/plain',
@@ -217,23 +214,55 @@ async function getEnvs(name, key, envType, userId) {
 };
 
 
+async function deleteEnvByIds(ids) {
+    const body = await api({
+        url: `api/env/deletes`,
+        method: 'delete',
+        body: JSON.stringify(ids),
+        headers: {
+            Accept: 'text/plain',
+            "Content-Type": "application/json-patch+json"
+        },
+    }).json();
+    return body;
+}
+
+
+
 /**
  * 发送通知消息
  * @param {any} content 发送消息内容
  * @param {any} isManager 是否发送给管理员
  */
-async function sendNotify(content, isManager) {
-    if (serverAddres && CommunicationType && CommunicationId) {
+async function sendNotify(content, isManager, userId) {
+    console.log(content);
+    if (isManager && !ManagerQQ) {
+        console.log(`消息内容：
+${content}
+指定发送给管理员，但似乎没有配置管理员QQ？`);
+        return;
+    }
+    if (isManager) {
+        user_id = ManagerQQ;
+    }
+    console.log(userId);
+    if (userId) {
+        user_id = userId;
+    }
+    console.log(user_id);
+    console.log(serverAddres);
+
+    if (serverAddres && user_id) {
         const body = await api({
             url: `api/Notifiy`,
             method: 'post',
             body: JSON.stringify({
                 message: `${content}`,
-                CommunicationType: CommunicationType, //通讯工具-来源于系统环境变量
-                CommunicationId: CommunicationId, //通讯工具id，来源于系统环境变量
-                TextToPicture: TextToPicture, //图片转文字，来源于系统环境变量
-                user_id: isManager ? ManagerQQ : user_id, //图片转文字，来源于系统环境变量
-                group_id: isManager ? 0 : group_id //图片转文字，来源于系统环境变量
+                CommunicationType: CommunicationType,
+                CommunicationId: CommunicationId,
+                TextToPicture: TextToPicture,
+                user_id: user_id, //
+                group_id: isManager ? "" : group_id
             }),
             headers: {
                 Accept: 'text/plain',
@@ -263,5 +292,11 @@ module.exports.getEnvs = getEnvs;
  * 发送通知消息
  * @param {any} content 发送消息内容
  * @param {any} isManager 是否发送给管理员
+ * @param {any} userId 指定接受消息的用户ID
  */
 module.exports.sendNotify = sendNotify;
+
+/**
+ * 通过账号id集合删除环境变量
+ * */
+module.exports.deleteEnvByIds = deleteEnvByIds;

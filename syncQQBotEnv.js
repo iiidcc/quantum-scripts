@@ -13,7 +13,6 @@ const api = got.extend({
 });
 
 !(async () => {
-
     console.log("开始同步QQBot 环境变量数据。。。。。请骚后。。。。")
     if (!QQBotAddress || !QQBotUserName || !QQBotPassWord) {
         var message = "QQBot 地址，账号，密码环境变量缺一不可。\r请查看脚本配置环境变量"

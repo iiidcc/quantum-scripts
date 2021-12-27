@@ -21,7 +21,7 @@ const JD_API_HOST = 'https://api.m.jd.com/client.action';
     cookiesArr = await getCookies();
     for (let i = 0; i < cookiesArr.length; i++) {
         if (cookiesArr[i]) {
-            cookie = cookiesArr[i];
+            cookie = cookiesArr[i].Value;
             $.UserName = decodeURIComponent(cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1])
             $.CryptoJS = $.isNode() ? require('crypto-js') : CryptoJS;
             $.index = i + 1;

@@ -1,4 +1,5 @@
 require('./env.js');
+const moment = require('moment');
 const $ = new Env('京东CK检测');
 
 let IsSystem = process.env.IsSystem == "true";
@@ -11,12 +12,11 @@ if (process.env.JD_COOKIE) {
 
 let CK_Failure_Notify = process.env.CK_Failure_Notify != "false"; //失效CK是否通知管理员
 
-const { disableEnvs, sendNotify, getCookies
+const { disableEnvs, sendNotify, getEnvs
 } = require('./quantum');
 
-
 !(async () => {
-    var cookiesArr = await getCookies();
+    var envs = await getEnvs("JD_COOKIE", "pt_key", 2, null);
     for (let i = 0; i < cookiesArr.length; i++) {
         if (cookiesArr[i]) {
             cookie = cookiesArr[i];
@@ -27,41 +27,32 @@ const { disableEnvs, sendNotify, getCookies
             $.isLogin = true;
             $.error = '';
             $.NoReturn = '';
-            $.nickName = $.UserName2;
-            console.log(`开始检测【京东账号${$.index}】${$.UserName2} ....\n`);
-            await TotalBean();
-            if ($.NoReturn) {
-                await isLoginByX1a0He();
-            } else {
-                if ($.isLogin) {
-                    if (!$.nickName) {
-                        console.log(`获取的别名为空，尝试使用LoginByX1a0He接口验证....\n`);
-                        await isLoginByX1a0He();
-                    } else {
-                        console.log(`成功获取到别名: ${$.nickName}!\n`);
-                    }
-                }
+            var t = envs.filter((n) => n.Value == cookie)[0];
+            if (t) {
+                $.UserName2 = t.UserRemark || $.UserName2;
             }
+            console.log(`开始检测【京东账号${$.index}】${$.UserName2} ....\n`);
+            await isLoginByX1a0He();
             if ($.error) {
                 console.log(`CK检测请求有错误，跳出....`);
                 TempOErrorMessage = $.error;
-                if (isAdd) {
-                    await sendNotify("CK检查异常，请稍后再试！")
-                }
             } else {
                 if ($.isLogin) {
-                    console.log("CK有效✅")
                     //系统自动执行时，CK有效不通知
                     if (!IsSystem) {
-                        var beanNum = ($.beanNum && $.beanNum > 0) ? "\r剩余豆豆：" + $.beanNum : "";
-                        await sendNotify("东东障号：" + $.nickName + "，有效✅" + beanNum);
+                        $.overdue = "";
+                        var overdueDate = moment(t.UpdateTime).add(30, 'days');
+                        var day = overdueDate.diff(new Date(), 'day');
+                        var message = `【东东障号】：${$.UserName2}，有效✅
+【预计失效】${day}天后，${moment(t.UpdateTime).format("MM月DD日")}失效。`
+                        await sendNotify(message);
                     }
                 }
                 else {
                     console.log(cookie + "失效！")
-                    await sendNotify(`东东障号：${$.UserName2}，失效❌！`)
+                    await sendNotify(`帐耗名称：${$.UserName2}，失效❌！`)
                     if (CK_Failure_Notify) {
-                        await sendNotify(`东东障号：${$.UserName2}，失效❌！`, true)
+                        await sendNotify(`用户Id：${process.env.user_id}，帐耗名称：${$.UserName2}，失效❌！`, true)
                     }
                     console.log(cookie + "自动禁用失效COOKIE❌！")
                     await disableEnvs([cookie]);
@@ -72,62 +63,6 @@ const { disableEnvs, sendNotify, getCookies
 })()
     .catch((e) => $.logErr(e))
     .finally(() => $.done())
-
-function TotalBean() {
-    return new Promise(async resolve => {
-        const options = {
-            url: "https://me-api.jd.com/user_new/info/GetJDUserInfoUnion",
-            headers: {
-                Host: "me-api.jd.com",
-                Accept: "*/*",
-                Connection: "keep-alive",
-                Cookie: cookie,
-                "User-Agent": $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT : (require('./USER_AGENTS').USER_AGENT)) : ($.getdata('JDUA') ? $.getdata('JDUA') : "jdapp;iPhone;9.4.4;14.3;network/4g;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1"),
-                "Accept-Language": "zh-cn",
-                "Referer": "https://home.m.jd.com/myJd/newhome.action?sceneval=2&ufc=&",
-                "Accept-Encoding": "gzip, deflate, br"
-            }
-        }
-        $.get(options, (err, resp, data) => {
-            try {
-                if (err) {
-                    console.log("TotalBean异常：" + JSON.stringify(err))
-                    $.nickName = decodeURIComponent($.UserName);
-                    $.NoReturn = `${$.nickName} :` + `${JSON.stringify(err)}\n`;
-                } else {
-                    if (data) {
-                        data = JSON.parse(data);
-                        if (data['retcode'] === "1001") {
-                            $.isLogin = false; //cookie过期
-                            $.nickName = decodeURIComponent($.UserName);
-                            return;
-                        }
-                        if (data['retcode'] === "0" && data.data && data.data.hasOwnProperty("userInfo")) {
-                            $.nickName = (data.data.userInfo.baseInfo.nickname);
-                        } else {
-                            $.nickName = decodeURIComponent($.UserName);
-                            console.log("Debug Code:" + data['retcode']);
-                            $.NoReturn = `${$.nickName} :` + `服务器返回未知状态，不做变动\n`;
-                        }
-                        if (data['retcode'] === "0" && data.data && data.data.hasOwnProperty("assetInfo")) {
-                            $.beanNum = (data.data.assetInfo.beanNum);
-                        }
-                    } else {
-                        $.nickName = decodeURIComponent($.UserName);
-                        $.log('京东服务器返回空数据');
-                        $.NoReturn = `${$.nickName} :` + `服务器返回空数据，不做变动\n`;
-                    }
-                }
-            } catch (e) {
-                $.nickName = decodeURIComponent($.UserName);
-                $.logErr(e)
-                $.NoReturn = `${$.nickName} : 检测出错，不做变动\n`;
-            } finally {
-                resolve();
-            }
-        })
-    })
-}
 
 function isLoginByX1a0He() {
     return new Promise((resolve) => {
@@ -144,15 +79,19 @@ function isLoginByX1a0He() {
                 if (data) {
                     data = JSON.parse(data);
                     if (data.islogin === "1") {
+                        console.log(`使用X1a0He写的接口加强检测: Cookie有效\n`)
                     } else if (data.islogin === "0") {
                         $.isLogin = false;
+                        console.log(`使用X1a0He写的接口加强检测: Cookie无效\n`)
                     } else {
-                        $.error = `${$.nickName} :` + `使用X1a0He写的接口加强检测: 未知返回...\n`
+                        console.log(`使用X1a0He写的接口加强检测: 未知返回，不作变更...\n`)
+                        $.error = `${$.UserName2} :` + `使用X1a0He写的接口加强检测: 未知返回...\n`
                     }
                 }
             } catch (e) {
                 console.log(e);
-            } finally {
+            }
+            finally {
                 resolve();
             }
         });

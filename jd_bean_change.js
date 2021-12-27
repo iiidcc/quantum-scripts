@@ -1,7 +1,7 @@
 const $ = new Env('京东资产变动');
 require('./env.js');
 const moment = require('moment');
-const {  getEnvs, sendNotify, getCookies
+const { getEnvs, sendNotify, getCookies
 } = require('./quantum');
 
 let EnableConc = process.env.EnableConc == "True"; //是否开启并发
@@ -27,19 +27,13 @@ let RemainMessage = '';
 let user_id = process.env.user_id; //用户id
 !(async () => {
     var cookiesArr = await getCookies();
-    var cks = await getEnvs("JD_COOKIE", "pt_key", 2, user_id)
     console.log("一共有" + cookiesArr.length + "个账号\r查询任务正在执行中，请稍后！")
     for (i = 0; i < cookiesArr.length; i++) {
-        cookie = cookiesArr[i];
+        cookie = cookiesArr[i].Value;
         $.overdue = "";
-        for (var x = 0; x < cks.length; x++) {
-            var ck = cks[x];
-            if (ck.Value == cookie) {
-                var overdueDate = moment(ck.UpdateTime).add(30, 'days');
-                var day = overdueDate.diff(new Date(), 'day');
-                $.overdue = `【预计失效】${day}后，${moment(ck.UpdateTime).format("yyyy年MM月DD日")}失效。`
-            }
-        }
+        var overdueDate = moment(cookiesArr[i].UpdateTime).add(30, 'days');
+        var day = overdueDate.diff(new Date(), 'day');
+        $.overdue = `【预计失效】${day}天后，${moment(cookiesArr[i].UpdateTime).format("MM月DD日")}失效。`
         $.pt_pin = (cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]);
         $.UserName = decodeURIComponent(cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]);
         $.CryptoJS = $.isNode() ? require('crypto-js') : CryptoJS;

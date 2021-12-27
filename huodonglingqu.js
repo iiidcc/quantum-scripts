@@ -16,7 +16,7 @@ let i = 0;
     cookiesArr = await getCookies();
     for (i = 0; i < cookiesArr.length; i++) {
         if (cookiesArr[i]) {
-            cookie = cookiesArr[i];
+            cookie = cookiesArr[i].Value;
             $.pt_pin = (cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]);
             $.UserName = decodeURIComponent(cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]);
             $.CryptoJS = $.isNode() ? require('crypto-js') : CryptoJS;

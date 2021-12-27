@@ -78,7 +78,7 @@ let intPerSent = 1; //通知分段
 
 async function showMsg() {
     let message = null;
-    if ($.getNum > 0) {
+    if ($.successNum > 0) {
         message = "京东试用通知\n";
         message += `${$.successNum}个商品待领取\n`;
         message += `${$.getNum}个商品已领取\n`;

@@ -1,6 +1,5 @@
 const $ = new Env('京东资产变动');
 require('./env.js');
-const moment = require('moment');
 const { addEnvs, getEnvs, sendNotify
 } = require('./quantum');
 
@@ -24,27 +23,15 @@ let RemainMessage = '';
 
 
 
-let user_id = process.env.user_id; //用户id
 !(async () => {
     if (!cookiesArr[0] && !EnableConc) {
         await sendNotify("您还没有提交账号，请提交后再来吧！")
         return;
     }
-    var cks = await getEnvs("JD_COOKIE", "pt_key", 2, user_id)
     // await sendNotify("您一共有" + cookiesArr.length + "个账号\r查询任务正在执行中，请稍后！")
     for (i = 0; i < cookiesArr.length; i++) {
         if (cookiesArr[i]) {
             cookie = cookiesArr[i];
-            $.overdue = "";
-
-            for (var i = 0; i < cks.length; i++) {
-                var ck = cks[i];
-                if (ck.Value == cookie) {
-                    var overdueDate = moment(ck.UpdateTime).add(30, 'days');
-                    var day = overdueDate.diff(new Date(), 'day');
-                    $.overdue = `【预计失效】${day}后，${moment(ck.UpdateTime).format("yyyy年MM月DD日")}失效。`
-                }
-            }
             $.pt_pin = (cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]);
             $.UserName = decodeURIComponent(cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]);
             $.CryptoJS = $.isNode() ? require('crypto-js') : CryptoJS;
@@ -280,9 +267,7 @@ async function showMsg() {
         }
     }
 
-    if ($.overdue) {
-        ReturnMessage += `${$.overdue}\n`;
-    }
+    ReturnMessage += `🧧🧧🧧红包明细🧧🧧🧧\n`;
     ReturnMessage += `${$.message}`;
     allMessage += ReturnMessage + ``;
     console.log(`${ReturnMessage}`);

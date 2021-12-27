@@ -2,11 +2,17 @@ require('./env.js');
 const $ = new Env('添加并验证CK');
 let ADD_COOKIE = process.env.ADD_COOKIE || "";
 
-//量子环境变量：ADD_COOKIE_NOTIFY，用户提交新CK是否通知管理员
-let ADD_COOKIE_NOTIFY = process.env.ADD_COOKIE_NOTIFY;
+//用户提交新CK是否通知管理员，默认通知，如果不想通知，添加量子环境变量：ADD_COOKIE_NOTIFY 值 false
+let ADD_COOKIE_NOTIFY = true
+if (process.env.ADD_COOKIE_NOTIFY) {
+    ADD_COOKIE_NOTIFY = process.env.ADD_COOKIE_NOTIFY == "true"
+}
 
-//量子环境变量：UPDATE_COOKIE_NOTIFY，用户更新CK是否通知管理员
-let UPDATE_COOKIE_NOTIFY = process.env.UPDATE_COOKIE_NOTIFY;
+//用户更新CK是否通知管理员 量子环境变量：UPDATE_COOKIE_NOTIFY:true
+let UPDATE_COOKIE_NOTIFY = true
+if (process.env.UPDATE_COOKIE_NOTIFY) {
+    UPDATE_COOKIE_NOTIFY = process.env.UPDATE_COOKIE_NOTIFY == "true"
+}
 
 let NVJDCStart = process.env.NVJDCStart;
 let Phone = process.env.NVJDCPhone;
@@ -52,11 +58,12 @@ const { addEnvs, getEnvs, sendNotify
             return;
         }
         if (Phone && VerifyCode) {
-            var message = `手机号${Phone}，短信验证码：${VerifyCode}`
+            var message = `手机号：${Phone}，短信验证码：${VerifyCode}，验证中请骚等。。`
+            await sendNotify(message);
             console.log(message)
             await verifyCode();
             if (!$.VerifyCodeSuccess) {
-                await sendNotify("短信验证失败，请尝试其他CK获取方法。");
+                await sendNotify("短信验证失败，请尝试其他获取方法。");
                 return false;
             }
         } else if (Phone) {
@@ -148,8 +155,7 @@ const { addEnvs, getEnvs, sendNotify
                             Name: "JD_COOKIE",
                             Enable: true,
                             Value: cookie,
-                            Remark: $.nickName,
-                            Weight: 0,
+                            UserRemark: $.nickName,
                             UserId: user_id,
                             EnvType: 2,
                             CommunicationType: 1
@@ -157,30 +163,33 @@ const { addEnvs, getEnvs, sendNotify
                         if (data2.length > 0) {
                             console.log("pt_pin存在，尝试更新JD_COOKIE");
                             c.Id = data2[0].Id;
-                            if (UPDATE_COOKIE_NOTIFY == "True") {
-                                await sendNotify(`用户CK：${cookie}
-更新成功，用户ID：${user_id} `, true)
+                            c.Weight = data2[0].Id;
+                            c.Remark = data2[0].Remark;
+                            if (UPDATE_COOKIE_NOTIFY) {
+                                await sendNotify(`Cookie更新通知，用户ID：${user_id}
+${cookie}`, true)
                             }
                         } else {
                             c.Id = null;
-                            if (ADD_COOKIE_NOTIFY == "True") {
-                                await sendNotify(`用户CK：${cookie}
-添加成功，用户ID：${user_id} `, true)
+                            if (ADD_COOKIE_NOTIFY) {
+                                await sendNotify(`Cookie新增通知，用户ID：${user_id}
+${cookie}`, true)
                             }
-                            console.log("全新韭菜上线拉。");
+                            console.log("全新韭菜上线拉！");
                         }
                         var data = await addEnvs([c]);
                         if (data.Code != 200) {
-                            await sendNotify(`提交CK，pt_pin=${pt_pin}：发生异常，已通知管理员处理啦。`)
+                            console.log("addEnvs Error ：" + JSON.stringify(data));
+                            await sendNotify(`提交CK，pt_pin=${pt_pin}：发生异常，已通知管理员处理啦！`)
                             await sendNotify(`用户ID：${user_id}提交CK pt_pin=${pt_pin}
 发生异常，系统错误：${data.Message}。`, true)
                             continue;
                         }
                     }
-                    await sendNotify("CK提交成功啦！\r狗东🆔：" + $.nickName + beanNum + '\r共计数量：' + (jdCookies.length + 1) + "\r更多指令请发送“菜单”获取");
+                    await sendNotify("提交成功啦！\r京东昵称：" + $.nickName + beanNum + '\r京东数量：' + (jdCookies.length + 1));
                 }
                 else {
-                    await sendNotify(`提交的CK，pt_pin=${pt_pin}：无效或已过期，请重新获取后发送。`)
+                    await sendNotify(`提交失败，Cookie无效或已过期，请重新获取后发送。`)
                 }
             }
         }

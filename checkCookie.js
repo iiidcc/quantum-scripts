@@ -2,13 +2,14 @@ require('./env.js');
 const $ = new Env('京东CK检测');
 
 let IsSystem = process.env.IsSystem == "true";
-let cookiesArr = []
+let cookiesArr = [];
+//是否开启并发
+let EnableConc = process.env.EnableConc == "True";
 if (process.env.JD_COOKIE) {
     cookiesArr = process.env.JD_COOKIE.split("&");
-    let EnableConc = process.env.EnableConc == "True"; //是否开启并发
 }
 
-let CK_Failure_Notify = process.env.CK_Failure_Notify; //失效CK是否通知管理员
+let CK_Failure_Notify = process.env.CK_Failure_Notify != "false"; //失效CK是否通知管理员
 
 const { disableEnvs, sendNotify
 } = require('./quantum');
@@ -17,7 +18,7 @@ const { disableEnvs, sendNotify
 !(async () => {
     if (!cookiesArr[0] && !EnableConc) {
         console.log("好像没有提交狗东CK？");
-        await sendNotify('好像没有提交狗东CK？')
+        //await sendNotify('好像没有提交狗东CK？')
         return;
     }
     for (let i = 0; i < cookiesArr.length; i++) {
@@ -63,7 +64,7 @@ const { disableEnvs, sendNotify
                 else {
                     console.log(cookie + "失效！")
                     await sendNotify(`东东障号：${$.UserName2}，失效❌！`)
-                    if (CK_Failure_Notify == "True") {
+                    if (CK_Failure_Notify) {
                         await sendNotify(`东东障号：${$.UserName2}，失效❌！`, true)
                     }
                     console.log(cookie + "自动禁用失效COOKIE❌！")

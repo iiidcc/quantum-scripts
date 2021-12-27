@@ -53,7 +53,7 @@ module.exports.getQLEnvs = async (ql, searchValue) => {
 module.exports.syncEnv = async () => {
     const body = await api({
         url: 'api/env/sync',
-        method: "get",
+        method:"get",
         headers: {
             Accept: 'text/plain',
             "Content-Type": "application/json"
@@ -163,7 +163,7 @@ module.exports.allEnvs = async (key, envType, enable, qlPanelId) => {
  * @param {any} key 环境变量值，模糊匹配 允许空
  * @param {any} envType 环境变量类型 允许空
  */
-module.exports.getEnvs = async (name, key, envType, userId) => {
+module.exports.getEnvs = async (name, key, envType) => {
     const body = await api({
         url: 'api/env/Query',
         method: 'get',
@@ -171,7 +171,6 @@ module.exports.getEnvs = async (name, key, envType, userId) => {
             key: key,
             name: name,
             envType: envType,
-            userId: userId,
             t: Date.now(),
         },
         headers: {
@@ -188,7 +187,7 @@ module.exports.getEnvs = async (name, key, envType, userId) => {
  * @param {any} isManager 是否发送给管理员
  */
 module.exports.sendNotify = async (content, isManager) => {
-    if (serverAddres && CommunicationType && CommunicationId && user_id) {
+    if (serverAddres && CommunicationType && CommunicationId) {
         const body = await api({
             url: `api/Notifiy`,
             method: 'post',

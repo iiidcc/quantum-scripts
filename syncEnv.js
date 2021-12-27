@@ -8,7 +8,7 @@ let notifyMessage = "";
 !(async () => {
 
     sendNotify("开始同步环境变量了，可能要点时间，骚等一下。", true)
-    console.log("开始同步环境变量。" + new Date())
+    console.log("开始同步环境变量。")
     var allQuantumEnvs = await allEnvs();
     var commonEnvs = allQuantumEnvs.filter((n => n.EnvType == 1));
     var userEnvs = allQuantumEnvs.filter((n => n.EnvType == 2));
@@ -28,10 +28,6 @@ let notifyMessage = "";
         console.log("没青龙容器,不同步.");
         return;
     }
-    // if (commonEnvs.length == 0 && userEnvs.length == 0) {
-    //     console.log("没环境变量,不同步.");
-    //     return;
-    // }
     //新增或者更新的CK
     var newCKs = [];
 
@@ -58,7 +54,6 @@ let notifyMessage = "";
                         qEnv.Value = qlenv.value;
                         console.log(`容器：${ql.Name}中，pt_pin：${pt_pin} CK更新时间${qlenv.timestamp}，将青龙中的环境变量更新到量子。`);
                         newCKs.push(qEnv);
-                        console.log(`push 环境变量到队列`);
                     }
                     //如果在量子中没有找到对应的环境变量则新增
                     else if (!qEnv || !qEnv.Id) {
@@ -75,6 +70,7 @@ let notifyMessage = "";
                                 Value: qlenv.value,
                                 Name: qlenv.name,
                                 Enable: true,
+                                UserRemark: qlenv.remarks,
                                 Remark: qlenv.remarks,
                                 EnvType: 2,
                                 Weight: 0,

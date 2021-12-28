@@ -80,6 +80,7 @@ async function showMsg() {
     let message = null;
     if ($.successNum > 0) {
         message = "京东试用通知\n";
+        message += `狗冬账号：${$.nickName || $.UserName}`;
         message += `${$.successNum}个商品待领取\n`;
         message += `${$.getNum}个商品已领取\n`;
         message += `${$.completeNum}个商品已完成\n`;

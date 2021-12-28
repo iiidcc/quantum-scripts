@@ -1,5 +1,5 @@
 require('./env.js');
-const $ = new Env('添加并验证CK');
+const $ = new Env('添加并验证Cookie');
 let ADD_COOKIE = process.env.ADD_COOKIE || "";
 
 //用户提交新CK是否通知管理员，默认通知，如果不想通知，添加量子环境变量：ADD_COOKIE_NOTIFY 值 false
@@ -188,7 +188,7 @@ ${cookie}`, true)
                             continue;
                         }
                     }
-                    await sendNotify("提交成功啦！\r京东昵称：" + $.nickName + beanNum + '\r京东数量：' + (jdCookies.length + 1));
+                    await sendNotify("提交成功啦！\r京东昵称：" + $.nickName + beanNum + '\r京东数量：' + (jdCookies.length + 1), false);
                 }
                 else {
                     await sendNotify(`提交失败，Cookie无效或已过期，请重新获取后发送。`)

@@ -5,7 +5,7 @@ let serverAddres = process.env.serverAddres || 'http://localhost:5088'; //服务
 let CommunicationType = process.env.CommunicationType; //通讯类型
 let CommunicationId = process.env.CommunicationId; //通讯工具ID
 let TextToPicture = process.env.TextToPicture; // 是否文字转图片
-let user_id = process.env.user_id || "179100150"; //用户id
+let user_id = process.env.user_id; //用户id
 let group_id = process.env.group_id; //群组ID
 let ManagerQQ = process.env.ManagerQQ; //管理员QQ
 let EnableConc = process.env.EnableConc == "True"; //是否开启并发
@@ -235,7 +235,10 @@ async function deleteEnvByIds(ids) {
  * @param {any} isManager 是否发送给管理员
  */
 async function sendNotify(content, isManager, userId) {
-    console.log(content);
+    //if (!isManager) {
+    //    return;
+    //}
+    //console.log(content);
     if (isManager && !ManagerQQ) {
         console.log(`消息内容：
 ${content}
@@ -245,7 +248,6 @@ ${content}
     if (isManager) {
         user_id = ManagerQQ;
     }
-    console.log(userId);
     if (userId) {
         user_id = userId;
     }
@@ -253,22 +255,25 @@ ${content}
     console.log(serverAddres);
 
     if (serverAddres && user_id) {
+
+        var b = JSON.stringify({
+            message: `${content}`,
+            CommunicationType: CommunicationType,
+            CommunicationId: CommunicationId,
+            TextToPicture: TextToPicture,
+            user_id: user_id, //
+            group_id: isManager ? "" : group_id
+        });
         const body = await api({
             url: `api/Notifiy`,
             method: 'post',
-            body: JSON.stringify({
-                message: `${content}`,
-                CommunicationType: CommunicationType,
-                CommunicationId: CommunicationId,
-                TextToPicture: TextToPicture,
-                user_id: user_id, //
-                group_id: isManager ? "" : group_id
-            }),
+            body: b,
             headers: {
                 Accept: 'text/plain',
                 "Content-Type": "application/json-patch+json"
             },
         }).json();
+        console.log("消息发送数据Body：" + b);
         if (body.Data) {
             console.log('发送通知消息成功🎉！');
         }

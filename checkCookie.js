@@ -52,7 +52,7 @@ const { disableEnvs, sendNotify, getEnvs
                     console.log(cookie + "失效！")
                     await sendNotify(`帐耗名称：${$.UserName2}，失效❌！`)
                     if (CK_Failure_Notify) {
-                        await sendNotify(`用户Id：${process.env.user_id}，帐耗名称：${$.UserName2}，失效❌！`, true)
+                        await sendNotify(`用户Id：${process.env.user_id || '-'}，帐耗名称：${$.UserName2}，失效❌！`, true)
                     }
                     console.log(cookie + "自动禁用失效COOKIE❌！")
                     await disableEnvs([cookie]);

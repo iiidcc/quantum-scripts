@@ -17,6 +17,9 @@ const { disableEnvs, sendNotify, getEnvs
 
 !(async () => {
     var envs = await getEnvs("JD_COOKIE", "pt_key", 2, null);
+
+    var userNotifyMessage = "";
+    var mamagerNotifyMessage = "";
     for (let i = 0; i < cookiesArr.length; i++) {
         if (cookiesArr[i]) {
             cookie = cookiesArr[i];
@@ -27,10 +30,18 @@ const { disableEnvs, sendNotify, getEnvs
             $.isLogin = true;
             $.error = '';
             $.NoReturn = '';
+
             var t = envs.filter((n) => n.Value == cookie)[0];
             if (t) {
                 $.UserName2 = t.UserRemark || $.UserName2;
             }
+
+            if (!t.Enable) {
+                console.log("账号：" + $.UserName2 + "本身就失效，不检查状态。");
+                continue;
+            }
+
+
             console.log(`开始检测【京东账号${$.index}】${$.UserName2} ....\n`);
             await isLoginByX1a0He();
             if ($.error) {
@@ -43,22 +54,28 @@ const { disableEnvs, sendNotify, getEnvs
                         $.overdue = "";
                         var overdueDate = moment(t.UpdateTime).add(30, 'days');
                         var day = overdueDate.diff(new Date(), 'day');
-                        var message = `【东东障号】：${$.UserName2}，有效✅
+                        userNotifyMessage += `【东东障号】：${$.UserName2}，有效✅
 【预计失效】${day}天后，${moment(t.UpdateTime).format("MM月DD日")}失效。`
                         await sendNotify(message);
                     }
                 }
                 else {
                     console.log(cookie + "失效！")
-                    await sendNotify(`帐耗名称：${$.UserName2}，失效❌！`)
+                    userNotifyMessage += `帐耗名称：${$.UserName2}，失效❌！\n`
                     if (CK_Failure_Notify) {
-                        await sendNotify(`用户Id：${process.env.user_id || '-'}，帐耗名称：${$.UserName2}，失效❌！`, true)
+                        mamagerNotifyMessage += `用户Id：${process.env.user_id || '-'}，帐耗名称：${$.UserName2}，失效❌！\n`
                     }
                     console.log(cookie + "自动禁用失效COOKIE❌！")
                     await disableEnvs([cookie]);
                 }
             }
         }
+    }
+    if (userNotifyMessage) {
+        await sendNotify(userNotifyMessage);
+    }
+    if (userNotifyMessage) {
+        await sendNotify(mamagerNotifyMessage, true);
     }
 })()
     .catch((e) => $.logErr(e))

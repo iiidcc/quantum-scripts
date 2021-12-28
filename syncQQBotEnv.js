@@ -4,9 +4,9 @@ const {
     addEnvs, sendNotify
 } = require('./quantum');
 
-let QQBotAddress = process.env.QQBotAddress || "http://1.1.1.1:5010"; //qqbot 地址 http://1.1.1.1:5010
-let QQBotUserName = process.env.QQBotUserName || "admin"; //qqbot 用户名
-let QQBotPassWord = process.env.QQBotPassWord || "admin"; //qqbot 密码
+let QQBotAddress = process.env.QQBotAddress; //qqbot 地址 http://1.1.1.1:5010
+let QQBotUserName = process.env.QQBotUserName; //qqbot 用户名
+let QQBotPassWord = process.env.QQBotPassWord; //qqbot 密码
 
 const api = got.extend({
     retry: { limit: 0 },

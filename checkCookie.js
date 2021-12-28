@@ -38,6 +38,9 @@ const { disableEnvs, sendNotify, getEnvs
 
             if (!t.Enable) {
                 console.log("账号：" + $.UserName2 + "本身就失效，不检查状态。");
+                if (!IsSystem) {
+                    userNotifyMessage += `帐耗名称：${$.UserName2}，失效❌！\n`
+                }
                 continue;
             }
 

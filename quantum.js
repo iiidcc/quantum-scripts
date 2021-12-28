@@ -238,7 +238,7 @@ async function sendNotify(content, isManager, userId) {
     //if (!isManager) {
     //    return;
     //}
-    //console.log(content);
+    var uuid = user_id;
     if (isManager && !ManagerQQ) {
         console.log(`消息内容：
 ${content}
@@ -246,22 +246,18 @@ ${content}
         return;
     }
     if (isManager) {
-        user_id = ManagerQQ;
+        uuid = ManagerQQ;
     }
     if (userId) {
-        user_id = userId;
+        uuid = userId;
     }
-    console.log(user_id);
-    console.log(serverAddres);
-
     if (serverAddres && user_id) {
-
         var b = JSON.stringify({
             message: `${content}`,
             CommunicationType: CommunicationType,
             CommunicationId: CommunicationId,
             TextToPicture: TextToPicture,
-            user_id: user_id, //
+            user_id: uuid,
             group_id: isManager ? "" : group_id
         });
         const body = await api({

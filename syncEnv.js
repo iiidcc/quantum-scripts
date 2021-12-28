@@ -4,10 +4,14 @@ const {
 } = require('./quantum');
 
 let notifyMessage = "";
+let isSystem = process.env.IsSystem == "true";
+
 
 !(async () => {
 
-    sendNotify("开始同步环境变量了，可能要点时间，骚等一下。", true)
+    if (!isSystem) {
+        sendNotify("开始同步环境变量了，可能要点时间，骚等一下。", true)
+    }
     console.log("开始同步环境变量。")
     var allQuantumEnvs = await allEnvs();
     var commonEnvs = allQuantumEnvs.filter((n => n.EnvType == 1));
@@ -105,5 +109,8 @@ let notifyMessage = "";
             notifyMessage += "\r" + message[i]
         }
     }
-    sendNotify(notifyMessage, true)
+
+    if (!isSystem) {
+        sendNotify(notifyMessage, true)
+    }
 })()

@@ -166,14 +166,16 @@ const { addEnvs, getEnvs, sendNotify
                             c.Weight = data2[0].Weight;
                             c.UserRemark = $.nickName;
                             if (UPDATE_COOKIE_NOTIFY) {
-                                await sendNotify(`Cookie更新通知，用户ID：${user_id}
-${cookie}`, true)
+                                await sendNotify(`Cookie更新通知
+用户ID：${user_id}
+pt_pin：${pt_pin}`, true)
                             }
                         } else {
                             c.Id = null;
                             if (ADD_COOKIE_NOTIFY) {
-                                await sendNotify(`Cookie新增通知，用户ID：${user_id}
-${cookie}`, true)
+                                await sendNotify(`Cookie新增通知
+用户ID：${user_id}
+pt_pin：${pt_pin}`, true)
                             }
                             console.log("全新韭菜上线拉！");
                         }
@@ -182,7 +184,7 @@ ${cookie}`, true)
                         console.log("提交结果：" + JSON.stringify(data));
                         if (data.Code != 200) {
                             console.log("addEnvs Error ：" + JSON.stringify(data));
-                            await sendNotify(`提交CK，pt_pin=${pt_pin}：发生异常，已通知管理员处理啦！`)
+                            await sendNotify(`提交失败辣，pt_pin=${pt_pin}：发生异常，已通知管理员处理啦！`)
                             await sendNotify(`用户ID：${user_id}提交CK pt_pin=${pt_pin}
 发生异常，系统错误：${data.Message}。`, true)
                             continue;

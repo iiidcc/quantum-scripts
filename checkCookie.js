@@ -19,7 +19,7 @@ const { disableEnvs, sendNotify, getEnvs
     var envs = await getEnvs("JD_COOKIE", "pt_key", 2, null);
 
     var userNotifyMessage = "";
-    var mamagerNotifyMessage = "";
+    var managerNotifyMessage = "";
     for (let i = 0; i < cookiesArr.length; i++) {
         if (cookiesArr[i]) {
             cookie = cookiesArr[i];
@@ -58,14 +58,14 @@ const { disableEnvs, sendNotify, getEnvs
                         var overdueDate = moment(t.UpdateTime).add(30, 'days');
                         var day = overdueDate.diff(new Date(), 'day');
                         userNotifyMessage += `【东东障号】：${$.UserName2}，有效✅
-【预计失效】${day}天后，${moment(t.UpdateTime).format("MM月DD日")}失效。`
+【预计失效】${day}天后，${moment(t.UpdateTime).format("MM月DD日")}失效。\n`
                     }
                 }
                 else {
                     console.log(cookie + "失效！")
                     userNotifyMessage += `帐耗名称：${$.UserName2}，失效❌！\n`
                     if (CK_Failure_Notify) {
-                        mamagerNotifyMessage += `用户Id：${process.env.user_id || '-'}，帐耗名称：${$.UserName2}，失效❌！\n`
+                        managerNotifyMessage += `用户Id：${process.env.user_id || '-'}，帐耗名称：${$.UserName2}，失效❌！\n`
                     }
                     console.log(cookie + "自动禁用失效COOKIE❌！")
                     await disableEnvs([cookie]);
@@ -77,7 +77,7 @@ const { disableEnvs, sendNotify, getEnvs
         await sendNotify(userNotifyMessage);
     }
     if (userNotifyMessage) {
-        await sendNotify(mamagerNotifyMessage, true);
+        await sendNotify(managerNotifyMessage, true);
     }
 })()
     .catch((e) => $.logErr(e))

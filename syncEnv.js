@@ -8,7 +8,6 @@ let isSystem = process.env.IsSystem == "true";
 
 
 !(async () => {
-
     if (!isSystem) {
         sendNotify("开始同步环境变量了，可能要点时间，骚等一下。", true)
     }

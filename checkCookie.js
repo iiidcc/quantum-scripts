@@ -20,6 +20,7 @@ const { disableEnvs, sendNotify, getEnvs
 
     var userNotifyMessage = "";
     var managerNotifyMessage = "";
+    var overdueCKs = [];
     for (let i = 0; i < cookiesArr.length; i++) {
         if (cookiesArr[i]) {
             cookie = cookiesArr[i];
@@ -39,7 +40,7 @@ const { disableEnvs, sendNotify, getEnvs
             if (!t.Enable) {
                 console.log("账号：" + $.UserName2 + "本身就失效，不检查状态。");
                 if (!IsSystem) {
-                    userNotifyMessage += `帐耗名称：${$.UserName2}，失效❌！\n`
+                    userNotifyMessage += `【帐耗名称】：${$.UserName2}，失效！请重新获取提交。\n`
                 }
                 continue;
             }
@@ -57,18 +58,18 @@ const { disableEnvs, sendNotify, getEnvs
                         $.overdue = "";
                         var overdueDate = moment(t.UpdateTime).add(30, 'days');
                         var day = overdueDate.diff(new Date(), 'day');
-                        userNotifyMessage += `【东东障号】：${$.UserName2}，有效✅
+                        userNotifyMessage += `【东东障号】：${$.UserName2}，有效！
 【预计失效】${day}天后，${moment(t.UpdateTime).format("MM月DD日")}失效。\n`
                     }
                 }
                 else {
                     console.log(cookie + "失效！")
-                    userNotifyMessage += `帐耗名称：${$.UserName2}，失效❌！\n`
+                    userNotifyMessage += `帐耗名称：${$.UserName2}，失效！\n`
                     if (CK_Failure_Notify) {
-                        managerNotifyMessage += `用户Id：${process.env.user_id || '-'}，帐耗名称：${$.UserName2}，失效❌！\n`
+                        managerNotifyMessage += `用户Id：${process.env.user_id || '-'}，帐耗名称：${$.UserName2}，失效！\n`
                     }
-                    console.log(cookie + "自动禁用失效COOKIE❌！")
-                    await disableEnvs([cookie]);
+                    console.log(cookie + "自动禁用失效COOKIE！")
+                    overdueCKs.push(cookie)
                 }
             }
         }
@@ -79,6 +80,7 @@ const { disableEnvs, sendNotify, getEnvs
     if (userNotifyMessage) {
         await sendNotify(managerNotifyMessage, true);
     }
+    await disableEnvs(overdueCKs);
 })()
     .catch((e) => $.logErr(e))
     .finally(() => $.done())

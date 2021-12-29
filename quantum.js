@@ -251,6 +251,9 @@ ${content}
     if (userId) {
         uuid = userId;
     }
+    //if (CommunicationId == "486d39bdd36741c692ccd5161d129be1") {
+    //    return;
+    //}
     if (serverAddres && user_id) {
         var b = JSON.stringify({
             message: `${content}`,

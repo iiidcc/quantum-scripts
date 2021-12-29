@@ -7,6 +7,7 @@ const {
 let QQBotAddress = process.env.QQBotAddress; //qqbot 地址 http://1.1.1.1:5010
 let QQBotUserName = process.env.QQBotUserName; //qqbot 用户名
 let QQBotPassWord = process.env.QQBotPassWord; //qqbot 密码
+let isSystem = process.env.IsSystem == "true";
 
 const api = got.extend({
     retry: { limit: 0 },
@@ -20,7 +21,9 @@ const api = got.extend({
         sendNotify(message, true)
         return false;
     }
-    sendNotify("开始同步环境变量了，可能要点时间，骚等一下。", true)
+    if (!isSystem) {
+        sendNotify("开始从qqbot同步环境变量了，可能要点时间，骚等一下。", true)
+    }
     console.log("开始同步环境变量。" + new Date())
 
     var options = {

@@ -17,10 +17,10 @@ const { disableEnvs, sendNotify, getEnvs
 
 !(async () => {
     var envs = await getEnvs("JD_COOKIE", "pt_key", 2, null);
-
     var userNotifyMessage = "";
     var managerNotifyMessage = "";
     var overdueCKs = [];
+
     for (let i = 0; i < cookiesArr.length; i++) {
         if (cookiesArr[i]) {
             cookie = cookiesArr[i];
@@ -44,8 +44,6 @@ const { disableEnvs, sendNotify, getEnvs
                 }
                 continue;
             }
-
-
             console.log(`开始检测【京东账号${$.index}】${$.UserName2} ....\n`);
             await isLoginByX1a0He();
             if ($.error) {

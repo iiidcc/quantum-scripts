@@ -18,10 +18,10 @@ var allMessage = "";
 !(async () => {
 
     cookiesArr = await getCookies();
-    //if (!cookiesArr[0] && !EnableConc) {
-    //    await sendNotify("您还没有提交账号，请提交后再来吧！")
-    //    return;
-    //}
+    if (process.env.CommunicationType == "3") {
+        await sendNotify("收到您的月度统计指令，请稍后。");
+        intPerSent = 0;
+    }
     for (let i = 0; i < cookiesArr.length; i++) {
         if (cookiesArr[i]) {
             cookie = cookiesArr[i].Value;
@@ -54,6 +54,9 @@ var allMessage = "";
                     allMessage = "";
                 }
             }
+            if (allMessage) {
+                allMessage += "【----------分割线----------】\n"
+            }
         }
     }
 
@@ -74,7 +77,7 @@ async function showMsg() {
 当月支出(截至昨日)：${$.allexpenseBean}京豆
 昨日收入：${$.incomeBean}京豆
 昨日支出：${$.expenseBean}京豆
-当前京豆：${$.beanCount}(今日将过期${$.expirejingdou})京豆`;
+当前京豆：${$.beanCount}(今日将过期${$.expirejingdou})京豆\n`;
 }
 async function bean() {
     const tm = parseInt((Date.now() + 28800000) / 86400000) * 86400000 - 28800000 - (24 * 60 * 60 * 1000);

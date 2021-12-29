@@ -213,7 +213,6 @@ async function getEnvs(name, key, envType, userId) {
     return body.Data;
 };
 
-
 async function deleteEnvByIds(ids) {
     const body = await api({
         url: `api/env/deletes`,
@@ -226,8 +225,6 @@ async function deleteEnvByIds(ids) {
     }).json();
     return body;
 }
-
-
 
 /**
  * 发送通知消息
@@ -257,6 +254,7 @@ ${content}
     if (serverAddres && user_id) {
         var b = JSON.stringify({
             message: `${content}`,
+            title: "小助手通知",
             CommunicationType: CommunicationType,
             CommunicationId: CommunicationId,
             TextToPicture: TextToPicture,

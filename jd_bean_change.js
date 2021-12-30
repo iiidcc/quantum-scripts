@@ -29,7 +29,6 @@ let user_id = process.env.user_id; //用户id
     var cookiesArr = await getCookies();
     console.log("一共有" + cookiesArr.length + "个账号\r查询任务正在执行中，请稍后！")
     if (process.env.CommunicationType == "3") {
-        await sendNotify("收到您的查询指令，请稍后。");
         intPerSent = 0;
     }
     for (i = 0; i < cookiesArr.length; i++) {

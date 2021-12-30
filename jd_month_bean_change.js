@@ -19,7 +19,6 @@ var allMessage = "";
 
     cookiesArr = await getCookies();
     if (process.env.CommunicationType == "3") {
-        await sendNotify("收到您的月度统计指令，请稍后。");
         intPerSent = 0;
     }
     for (let i = 0; i < cookiesArr.length; i++) {

@@ -36,7 +36,7 @@ let user_id = process.env.user_id; //用户id
         $.overdue = "";
         var overdueDate = moment(cookiesArr[i].UpdateTime).add(30, 'days');
         var day = overdueDate.diff(new Date(), 'day');
-        $.overdue = `【预计失效】${day}天后，${moment(cookiesArr[i].UpdateTime).format("MM月DD日")}失效。`
+        $.overdue = `【预计失效】${day}天后，${overdueDate.format("MM月DD日")}失效。`
         $.pt_pin = (cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]);
         $.UserName = decodeURIComponent(cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]);
         $.CryptoJS = $.isNode() ? require('crypto-js') : CryptoJS;

@@ -19,7 +19,6 @@ let user_id = process.env.user_id; //用户id
         return;
     }
     var data = await CreateQrcode();
-    console.log(data);
     if (data.Code == 200) {
         await sendNotify("请在2分钟使用微信扫码，完成关注。[CQ:image,file=" + data.Data + ",type=show,id=40000,cache=0]");
     } else {

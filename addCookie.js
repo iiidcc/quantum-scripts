@@ -1,3 +1,13 @@
+/**
+ * 本脚本支持环境变量 及 说明
+ * ADD_COOKIE_NOTIFY   （有用户提交新的CK时是否通知管理员，不配置默认通知，不需要通知请添加环境变量值为 false）
+ * UPDATE_COOKIE_NOTIFY （有用户更新的CK时是否通知管理员，不配置默认不通知，不需要通知请添加环境变量值为 true）
+ * NVJDC_URL   (Nolan JDC 服务地址，短信登录时需要 配置示例： http://192.168.2.1:9999  )
+ * NVJDCQLKey (Nolan JDC 中配置的青龙的QLKey，如果nvjdc没有配置，则不需要配置。)
+ **/
+
+
+
 require('./env.js');
 const $ = new Env('添加并验证Cookie');
 let ADD_COOKIE = process.env.ADD_COOKIE || "";
@@ -9,7 +19,7 @@ if (process.env.ADD_COOKIE_NOTIFY) {
 }
 
 //用户更新CK是否通知管理员 量子环境变量：UPDATE_COOKIE_NOTIFY:true
-let UPDATE_COOKIE_NOTIFY = true
+let UPDATE_COOKIE_NOTIFY = false
 if (process.env.UPDATE_COOKIE_NOTIFY) {
     UPDATE_COOKIE_NOTIFY = process.env.UPDATE_COOKIE_NOTIFY == "true"
 }
@@ -146,7 +156,7 @@ const { addEnvs, getEnvs, sendNotify
                     var beanNum = ($.beanNum && $.beanNum > 0) ? "\r剩余豆豆：" + $.beanNum : "";
                     var data1 = await getEnvs("JD_COOKIE", pt_key, 2);
                     if (data1.length > 0) {
-                        console.log("pt_key" + pt_key + "重复，已跳过写入环境变量。");
+                        console.log("pt_key：" + pt_key + "重复，已跳过写入环境变量。");
                         await sendNotify(`提交的CK重复啦！`)
                         return;
                     } else {
@@ -177,6 +187,7 @@ pt_pin：${pt_pin}`, true)
 用户ID：${user_id}
 pt_pin：${pt_pin}`, true)
                             }
+                            jdCookies.push(cookie)
                             console.log("全新韭菜上线拉！");
                         }
                         console.log("开始提交CK到量子数据库");
@@ -190,7 +201,7 @@ pt_pin：${pt_pin}`, true)
                             continue;
                         }
                     }
-                    await sendNotify("提交成功啦！\r京东昵称：" + $.nickName + beanNum + '\r京东数量：' + (jdCookies.length + 1), false);
+                    await sendNotify("提交成功啦！\r京东昵称：" + $.nickName + beanNum + '\r京东数量：' + (jdCookies.length), false);
                 }
                 else {
                     await sendNotify(`提交失败，Cookie无效或已过期，请重新获取后发送。`)

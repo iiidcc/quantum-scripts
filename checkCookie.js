@@ -1,3 +1,11 @@
+
+/**
+ * 本脚本支持环境变量 及 说明
+ * CK_Failure_Notify   （检测到失效CK是否通知管理员，默认通知，不需要通知则配置为 false）
+ **/
+
+
+
 require('./env.js');
 const moment = require('moment');
 const $ = new Env('京东CK检测');

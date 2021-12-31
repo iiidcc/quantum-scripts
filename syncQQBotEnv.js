@@ -1,12 +1,25 @@
+
+/**
+ * 本脚本支持环境变量 及 说明
+ * QQBotAddress   QQBot 访问地址如：http://192.168.1.100:5010
+ * QQBotUserName QQBot 用户名名 如：admin
+ * QQBotPassWord QQBot 密码 如： admin123
+ **/
+
+
 require('./env.js');
 const got = require('got');
 const {
     addEnvs, sendNotify
 } = require('./quantum');
 
+// 在环境变量中添加下面这三个环境变量
 let QQBotAddress = process.env.QQBotAddress; //qqbot 地址 http://1.1.1.1:5010
 let QQBotUserName = process.env.QQBotUserName; //qqbot 用户名
 let QQBotPassWord = process.env.QQBotPassWord; //qqbot 密码
+
+
+
 let isSystem = process.env.IsSystem == "true";
 
 const api = got.extend({
@@ -79,6 +92,7 @@ const api = got.extend({
             return;
         }
         console.log("同步完成拉!");
+        sendNotify("同步qqbot环境变量完成了，一共有" + cks.length + "个有效CK。", true)
     } else {
         console.log(jdCookies.Message);
     }

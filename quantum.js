@@ -31,9 +31,8 @@ module.exports.getQLPanels = async () => {
 
 module.exports.getCookies = async () => {
     var envs = await getEnvs("JD_COOKIE", "pt_key", 2, null);
-    console.log(`用户id：${user_id}，ck数量${envs.length}个。`);
+    console.log(`用户id：${user_id}`);
     var cookies = [];
-
     var envCookies = [];
     if (process.env.JD_COOKIE) {
         envCookies = process.env.JD_COOKIE.split("&");
@@ -152,16 +151,18 @@ module.exports.addEnvs = async (env) => {
  * @param {any} envs
  */
 module.exports.disableEnvs = async (envs) => {
-    const body = await api({
-        url: 'api/env/DisableEnvs',
-        method: 'put',
-        body: JSON.stringify(envs),
-        headers: {
-            Accept: 'text/plain',
-            "Content-Type": "application/json-patch+json"
-        },
-    }).json();
-    return body;
+    if (envs && envs.length > 0) {
+        const body = await api({
+            url: 'api/env/DisableEnvs',
+            method: 'put',
+            body: JSON.stringify(envs),
+            headers: {
+                Accept: 'text/plain',
+                "Content-Type": "application/json-patch+json"
+            },
+        }).json();
+        return body;
+    }
 }
 
 
@@ -251,6 +252,7 @@ ${content}
     //if (CommunicationId == "486d39bdd36741c692ccd5161d129be1") {
     //    return;
     //}
+    console.log(user_id)
     if (serverAddres && user_id) {
         var b = JSON.stringify({
             message: `${content}`,
@@ -261,6 +263,7 @@ ${content}
             user_id: uuid,
             group_id: isManager ? "" : group_id
         });
+        console.log(b);
         const body = await api({
             url: `api/Notifiy`,
             method: 'post',
@@ -270,7 +273,6 @@ ${content}
                 "Content-Type": "application/json-patch+json"
             },
         }).json();
-        console.log("消息发送数据Body：" + b);
         if (body.Data) {
             console.log('发送通知消息成功🎉！');
         }

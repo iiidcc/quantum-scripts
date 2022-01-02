@@ -7,7 +7,6 @@
  **/
 
 
-
 require('./env.js');
 const $ = new Env('添加并验证Cookie');
 let ADD_COOKIE = process.env.ADD_COOKIE || "";
@@ -36,13 +35,9 @@ let NVJDC_URL = process.env.NVJDC_URL;
 let NVJDCQLKey = process.env.NVJDCQLKey || 0;
 
 $.SendSMSSuccess = false;
-
 $.AutoCaptchaSuccess = false;
-
 $.VerifyCodeSuccess = false;
-
 $.NVJDCMessage = "";
-
 let jdCookies = []
 if (process.env.JD_COOKIE) {
     jdCookies = process.env.JD_COOKIE.split("&");
@@ -106,11 +101,21 @@ const { addEnvs, getEnvs, sendNotify
     } else {
         await sendNotify(`机器人已经收到你提交的CK\r正在进行验证中，请稍后！`)
     }
+    console.log("用户指令：" + ADD_COOKIE);
     for (let i = 0; i < cookies.length; i++) {
         var cookie = cookies[i];
         if (cookie) {
-            var pt_key = cookie.match(/pt_key=([^; ]+)(?=;?)/)[1]
-            var pt_pin = cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]
+            var pt_key = null;
+            var pt_pin = null;
+            try {
+
+                pt_key = cookie.match(/pt_key=([^; ]+)(?=;?)/)[1]
+                pt_pin = cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]
+            }
+            catch (e) {
+                console.log("CK： " + cookie + "格式不对，已跳过");
+                continue;
+            }
             if (!pt_key || !pt_pin) {
                 continue;
             }
@@ -126,7 +131,7 @@ const { addEnvs, getEnvs, sendNotify
                 pt_pin = encodeURI(pt_pin);
             }
             cookie = `pt_key=${pt_key};pt_pin=${pt_pin};`
-            $.UserName = (cookie.match(/pt_pin=([^; ]+)(?=;?)/) && pt_pin)
+            $.UserName = pt_pin
             $.UserName2 = decodeURI($.UserName);
             $.index = i + 1;
             $.isLogin = true;
@@ -156,7 +161,7 @@ const { addEnvs, getEnvs, sendNotify
                     var beanNum = ($.beanNum && $.beanNum > 0) ? "\r剩余豆豆：" + $.beanNum : "";
                     var data1 = await getEnvs("JD_COOKIE", pt_key, 2);
                     if (data1.length > 0) {
-                        console.log("pt_key：" + pt_key + "重复，已跳过写入环境变量。");
+                        console.log("pt_key重复，已跳过写入环境变量。");
                         await sendNotify(`提交的CK重复啦！`)
                         return;
                     } else {

@@ -50,6 +50,7 @@ var pt_key = null;
 var pt_pin = null;
 
 !(async () => {
+    cookies = ADD_COOKIE.split("&");
     if (NVJDCStart) {
         console.log("NVJDC_URL：" + NVJDC_URL);
         console.log("NVJDCQLKey：" + NVJDCQLKey);
@@ -100,9 +101,6 @@ var pt_pin = null;
         }
     }
     console.log("触发指令信息：" + ADD_COOKIE);
-
-    cookies = ADD_COOKIE.split("&");
-
     for (let i = 0; i < cookies.length; i++) {
         var cookie = cookies[i];
         if (cookie) {

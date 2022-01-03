@@ -7,7 +7,7 @@
  **/
 require('./env.js');
 const $ = new Env('添加并验证Cookie');
-let ADD_COOKIE = process.env.ADD_COOKIE;
+let ADD_COOKIE = process.env.ADD_COOKIE || "";
 
 //用户提交新CK是否通知管理员，默认通知，如果不想通知，添加量子环境变量：ADD_COOKIE_NOTIFY 值 false
 let ADD_COOKIE_NOTIFY = true
@@ -43,14 +43,13 @@ if (process.env.JD_COOKIE) {
 
 var cookies = [];
 
-const { addEnvs, getEnvs, allEnvs, sendNotify
+const { addEnvs, allEnvs, sendNotify
 } = require('./quantum');
 
 var pt_key = null;
 var pt_pin = null;
 
 !(async () => {
-    cookies = ADD_COOKIE.split("&");
     if (NVJDCStart) {
         console.log("NVJDC_URL：" + NVJDC_URL);
         console.log("NVJDCQLKey：" + NVJDCQLKey);
@@ -99,10 +98,11 @@ var pt_pin = null;
             await sendNotify("OK，请输入您的手机号码：");
             return;
         }
-    } else {
-        await sendNotify(`机器人已经收到你提交的CK\r正在进行验证中，请稍后！`)
     }
-    console.log("用户指令：" + ADD_COOKIE);
+    console.log("触发指令信息：" + ADD_COOKIE);
+
+    cookies = ADD_COOKIE.split("&");
+
     for (let i = 0; i < cookies.length; i++) {
         var cookie = cookies[i];
         if (cookie) {

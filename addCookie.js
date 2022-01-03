@@ -5,11 +5,9 @@
  * NVJDC_URL   (Nolan JDC 服务地址，短信登录时需要 配置示例： http://192.168.2.1:9999  )
  * NVJDCQLKey (Nolan JDC 中配置的青龙的QLKey，如果nvjdc没有配置，则不需要配置。)
  **/
-
-
 require('./env.js');
 const $ = new Env('添加并验证Cookie');
-let ADD_COOKIE = process.env.ADD_COOKIE || "";
+let ADD_COOKIE = process.env.ADD_COOKIE;
 
 //用户提交新CK是否通知管理员，默认通知，如果不想通知，添加量子环境变量：ADD_COOKIE_NOTIFY 值 false
 let ADD_COOKIE_NOTIFY = true
@@ -45,8 +43,11 @@ if (process.env.JD_COOKIE) {
 
 var cookies = [];
 
-const { addEnvs, getEnvs, sendNotify
+const { addEnvs, getEnvs, allEnvs, sendNotify
 } = require('./quantum');
+
+var pt_key = null;
+var pt_pin = null;
 
 !(async () => {
     cookies = ADD_COOKIE.split("&");
@@ -105,8 +106,6 @@ const { addEnvs, getEnvs, sendNotify
     for (let i = 0; i < cookies.length; i++) {
         var cookie = cookies[i];
         if (cookie) {
-            var pt_key = null;
-            var pt_pin = null;
             try {
 
                 pt_key = cookie.match(/pt_key=([^; ]+)(?=;?)/)[1]
@@ -158,14 +157,15 @@ const { addEnvs, getEnvs, sendNotify
                 await sendNotify("CK检查异常，请稍后重试！", false)
             } else {
                 if ($.isLogin) {
+                    cookie = `pt_key=${pt_key};pt_pin=${pt_pin};`
                     var beanNum = ($.beanNum && $.beanNum > 0) ? "\r剩余豆豆：" + $.beanNum : "";
-                    var data1 = await getEnvs("JD_COOKIE", pt_key, 2);
+                    var data1 = await allEnvs(pt_key, 2);
                     if (data1.length > 0) {
                         console.log("pt_key重复，已跳过写入环境变量。");
                         await sendNotify(`提交的CK重复啦！`)
                         return;
                     } else {
-                        var data2 = await getEnvs("JD_COOKIE", pt_pin, 2);
+                        var data2 = await allEnvs(pt_pin, 2);
                         var c = {
                             Name: "JD_COOKIE",
                             Enable: true,
@@ -180,6 +180,7 @@ const { addEnvs, getEnvs, sendNotify
                             c.Id = data2[0].Id;
                             c.Weight = data2[0].Weight;
                             c.UserRemark = $.nickName;
+                            c.QLPanelEnvs = data2[0].QLPanelEnvs;
                             if (UPDATE_COOKIE_NOTIFY) {
                                 await sendNotify(`Cookie更新通知
 用户ID：${user_id}
@@ -361,12 +362,16 @@ function TotalBean(cookie) {
                     if (data) {
                         data = JSON.parse(data);
                         if (data['retcode'] === "1001") {
+                            console.log("TotalBean 检测 CK 过期");
                             $.isLogin = false; //cookie过期
                             $.nickName = decodeURIComponent($.UserName);
                             return;
                         }
                         if (data['retcode'] === "0" && data.data && data.data.hasOwnProperty("userInfo")) {
-                            $.nickName = (data.data.userInfo.baseInfo.nickname);
+                            console.log("TotalBean 检测有效");
+                            console.log(JSON.stringify(data.data));
+                            $.nickName = (data.data.userInfo.baseInfo.nickname) || data.data.userInfo.baseInfo.curPin || $.nickName;
+                            pt_pin = data.data.userInfo.baseInfo.curPin || pt_pin;
                         } else {
                             $.nickName = decodeURIComponent($.UserName);
                             console.log("Debug Code:" + data['retcode']);
@@ -405,8 +410,10 @@ function isLoginByX1a0He(cookie) {
         $.get(options, (err, resp, data) => {
             try {
                 if (data) {
+                    console.log("isLoginByX1a0He 检测返回数据：" + data)
                     data = JSON.parse(data);
                     if (data.islogin === "1") {
+                        $.isLogin = true;
                     } else if (data.islogin === "0") {
                         $.isLogin = false;
                     } else {

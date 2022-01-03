@@ -11,8 +11,11 @@ let user_id = process.env.user_id; //用户id
     }
     console.log("user_id:" + user_id);
     var cks = await getEnvs("JD_COOKIE", "pt_key", 2, user_id)
-    var message = `您一共绑定了${cks.length}个狗东：`;
-    console.log(message);
+    var message = "";
+    if (cks.length > 0)
+        message = `您一共绑定了${cks.length}个狗东：`;
+    else
+        message = "您没有绑定账号。"
     for (var i = 0; i < cks.length; i++) {
         var ck = cks[i];
         console.log(ck);

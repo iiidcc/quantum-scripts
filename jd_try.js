@@ -1,7 +1,7 @@
 const $ = new Env('京东试用领取通知')
 
 require('./env.js');
-const { addEnvs, getEnvs, sendNotify
+const { sendNotify
 } = require('./quantum');
 
 let EnableConc = process.env.EnableConc == "True"; //是否开启并发

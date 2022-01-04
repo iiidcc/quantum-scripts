@@ -18,6 +18,7 @@ const api = got.extend({
     retry: { limit: 0 },
 });
 
+console.log("脚本库更新日期：2022年1月4日");
 // 获取青龙面板信息
 module.exports.getQLPanels = async () => {
     const body = await api({

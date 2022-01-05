@@ -11,12 +11,7 @@ require('./env.js');
 const moment = require('moment');
 const { getEnvs, sendNotify, getCookies
 } = require('./quantum');
-
 let EnableConc = process.env.EnableConc == "True"; //是否开启并发
-let cookiesArr = []
-if (process.env.JD_COOKIE) {
-    cookiesArr = process.env.JD_COOKIE.split("&");
-}
 let allMessage = '';
 let allMessage2 = '';
 let allReceiveMessage = '';
@@ -34,8 +29,8 @@ let RemainMessage = '';
 
 let user_id = process.env.user_id; //用户id
 !(async () => {
-
-    console.log("一共有" + cookiesArr.length + "个账号\r查询任务正在执行中，请稍后！")
+    var cookiesArr = await getCookies();
+    console.log("一共有" + (cookiesArr.length) + "个账号\r查询任务正在执行中，请稍后！")
     if (cookiesArr.length == 0) {
         console.log("没有Cookies信息结束任务。");
         if (process.env.NO_CK_NOTIFY) {
@@ -43,7 +38,6 @@ let user_id = process.env.user_id; //用户id
         }
         return;
     }
-    var cookiesArr = await getCookies();
     if (process.env.CommunicationType == "3") {
         intPerSent = 0;
     }

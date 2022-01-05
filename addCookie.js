@@ -4,6 +4,7 @@
  * UPDATE_COOKIE_NOTIFY （有用户更新的CK时是否通知管理员，不配置默认不通知，不需要通知请添加环境变量值为 true）
  * NVJDC_URL   (Nolan JDC 服务地址，短信登录时需要 配置示例： http://192.168.2.1:9999  )
  **/
+
 require('./env.js');
 const $ = new Env('添加并验证Cookie');
 let ADD_COOKIE = process.env.ADD_COOKIE || "";
@@ -47,7 +48,6 @@ const { addEnvs, allEnvs, sendNotify
 
 var pt_key = null;
 var pt_pin = null;
-
 !(async () => {
     cookies = ADD_COOKIE.split("&");
     if (NVJDCStart) {
@@ -258,7 +258,6 @@ function verifyCode() {
         });
     });
 }
-
 
 function SendSMS() {
     return new Promise(async resolve => {

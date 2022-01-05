@@ -13,6 +13,9 @@ let IsSystem = process.env.IsSystem == "true"; //是否系统执行。
 //------------- 量子助手系统环境变量部分 -------------
 let prefixUrl = process.env.serverAddres || 'http://localhost:5088';
 
+
+console.log("脚本更新日期：2022年1月4日");
+
 const api = got.extend({
     prefixUrl: prefixUrl,
     retry: { limit: 0 },
@@ -234,9 +237,6 @@ async function deleteEnvByIds(ids) {
  * @param {any} isManager 是否发送给管理员
  */
 async function sendNotify(content, isManager, userId) {
-    //if (!isManager) {
-    //    return;
-    //}
     var uuid = user_id;
     if (isManager && !ManagerQQ) {
         console.log(`消息内容：
@@ -250,9 +250,6 @@ ${content}
     if (userId) {
         uuid = userId;
     }
-    //if (CommunicationId == "486d39bdd36741c692ccd5161d129be1") {
-    //    return;
-    //}
     console.log(user_id)
     if (serverAddres && user_id) {
         var b = JSON.stringify({

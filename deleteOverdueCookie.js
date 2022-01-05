@@ -1,7 +1,5 @@
 // 删除过期CK
-
 require('./env.js');
-
 const {
     sendNotify, getEnvs, deleteEnvByIds, syncEnv
 } = require('./quantum');
@@ -9,10 +7,8 @@ const {
 !(async () => {
     //获取所有的CK 
     var envs = await getEnvs("JD_COOKIE", "pt_key", 2, null);
-
     envs = envs.filter((n) => !n.Enable);
     console.log(`过期CK共${envs.length}个。`);
-
     if (envs.length == 0) {
         console.log("没有过期的CK.");
         return;

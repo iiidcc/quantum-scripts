@@ -1,10 +1,10 @@
-
 /**
- * 本脚本支持环境变量 及 说明
+ * 可用环境变量 请通过环境变量添加量子变量
+ *
+ * NO_CK_NOTIFY ，说明未提交京东CK时提醒信息。
  * CK_Failure_Notify   （检测到失效CK是否通知管理员，默认通知，不需要通知则配置为 false）
- **/
-
-
+ *
+ * */
 
 require('./env.js');
 const moment = require('moment');
@@ -24,6 +24,13 @@ const { disableEnvs, sendNotify, getEnvs
 } = require('./quantum');
 
 !(async () => {
+    if (cookiesArr.length == 0) {
+        console.log("没有Cookies信息结束任务。");
+        if (process.env.NO_CK_NOTIFY) {
+            await sendNotify(process.env.NO_CK_NOTIFY);
+        }
+        return;
+    }
     var envs = await getEnvs("JD_COOKIE", "pt_key", 2, null);
     var userNotifyMessage = "";
     var managerNotifyMessage = "";

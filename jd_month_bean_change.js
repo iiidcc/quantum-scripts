@@ -1,11 +1,15 @@
+/**
+ * 可用环境变量 请通过环境变量添加量子变量
+ *
+ * NO_CK_NOTIFY ，说明未提交京东CK时提醒信息。
+ *
+ * */
 
 const $ = new Env('京东月资产变动通知');
 
 require('./env.js');
 const { sendNotify, getCookies
 } = require('./quantum');
-
-let EnableConc = process.env.EnableConc == "True"; //是否开启并发
 
 let cookiesArr = []
 let intPerSent = 1;
@@ -18,6 +22,15 @@ var allMessage = "";
 !(async () => {
 
     cookiesArr = await getCookies();
+
+    if (cookiesArr.length == 0) {
+        console.log("没有Cookies信息结束任务。");
+        if (process.env.NO_CK_NOTIFY) {
+            await sendNotify(process.env.NO_CK_NOTIFY);
+        }
+        return;
+    }
+
     if (process.env.CommunicationType == "3") {
         intPerSent = 0;
     }

@@ -1,3 +1,11 @@
+/**
+ * 可用环境变量 请通过环境变量添加量子变量
+ *
+ * NO_CK_NOTIFY ，说明未提交京东CK时提醒信息。
+ *
+ * */
+
+
 const $ = new Env('活动领取');
 require('./env.js');
 const { addEnvs, getEnvs, sendNotify, getCookies
@@ -14,6 +22,13 @@ let i = 0;
 
 !(async () => {
     cookiesArr = await getCookies();
+    if (cookiesArr.length == 0) {
+        console.log("没有Cookies信息结束任务。");
+        if (process.env.NO_CK_NOTIFY) {
+            await sendNotify(process.env.NO_CK_NOTIFY);
+        }
+        return;
+    }
     for (i = 0; i < cookiesArr.length; i++) {
         if (cookiesArr[i]) {
             cookie = cookiesArr[i].Value;

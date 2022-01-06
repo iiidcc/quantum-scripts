@@ -14,14 +14,11 @@ let IsSystem = process.env.IsSystem == "true"; //是否系统执行。
 let prefixUrl = process.env.serverAddres || 'http://localhost:5088';
 
 
-console.log("脚本更新日期：2022年1月4日");
-
 const api = got.extend({
     prefixUrl: prefixUrl,
     retry: { limit: 0 },
 });
-
-console.log("脚本库更新日期：2022年1月4日");
+console.log("脚本库更新时间：2022年1月6日 14点06分");
 // 获取青龙面板信息
 module.exports.getQLPanels = async () => {
     const body = await api({
@@ -56,6 +53,11 @@ module.exports.getCookies = async () => {
         }
         var pt_key = cookie.match(/pt_key=([^; ]+)(?=;?)/)[1]
         var pt_pin = cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]
+        var reg = new RegExp("[\\u4E00-\\u9FFF]+", "g");
+        if (reg.test(pt_pin)) {
+            pt_pin = encodeURI(pt_pin);
+            env.Value = `pt_key=${$.pt_key};pt_pin=${$.pt_pin};`
+        }
         if (!env.Enable) {
             var m1 = `帐呺：${env.UserRemark || pt_pin}已经过期了，请重新获取提交吧！`;
             console.log(m1)

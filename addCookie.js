@@ -42,12 +42,9 @@ if (process.env.JD_COOKIE) {
 }
 
 var cookies = [];
-
 const { addEnvs, allEnvs, sendNotify
 } = require('./quantum');
 
-var pt_key = null;
-var pt_pin = null;
 !(async () => {
     cookies = ADD_COOKIE.split("&");
     if (NVJDCStart) {
@@ -104,15 +101,14 @@ var pt_pin = null;
         var cookie = cookies[i];
         if (cookie) {
             try {
-
-                pt_key = cookie.match(/pt_key=([^; ]+)(?=;?)/)[1]
-                pt_pin = cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]
+                $.pt_key = cookie.match(/pt_key=([^; ]+)(?=;?)/)[1]
+                $.pt_pin = cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]
             }
             catch (e) {
                 console.log("CK： " + cookie + "格式不对，已跳过");
                 continue;
             }
-            if (!pt_key || !pt_pin) {
+            if (!$.pt_key || !$.pt_pin) {
                 continue;
             }
             user_id = cookie.match(/qq=([^; ]+)(?=;?)/)
@@ -123,11 +119,11 @@ var pt_pin = null;
             }
             //处理pt_pin中带中文的问题
             var reg = new RegExp("[\\u4E00-\\u9FFF]+", "g");
-            if (reg.test(pt_pin)) {
-                pt_pin = encodeURI(pt_pin);
+            if (reg.test($.pt_pin)) {
+                $.pt_pin = encodeURI($.pt_pin);
             }
-            cookie = `pt_key=${pt_key};pt_pin=${pt_pin};`
-            $.UserName = pt_pin
+            cookie = `pt_key=${$.pt_key};pt_pin=${$.pt_pin};`
+            $.UserName = $.pt_pin
             $.UserName2 = decodeURI($.UserName);
             $.index = i + 1;
             $.isLogin = true;
@@ -154,15 +150,19 @@ var pt_pin = null;
                 await sendNotify("CK检查异常，请稍后重试！", false)
             } else {
                 if ($.isLogin) {
-                    cookie = `pt_key=${pt_key};pt_pin=${pt_pin};`
+                    var reg2 = new RegExp("[\\u4E00-\\u9FFF]+", "g");
+                    if (reg2.test($.pt_pin)) {
+                        $.pt_pin = encodeURI($.pt_pin);
+                    }
+                    cookie = `pt_key=${$.pt_key};pt_pin=${$.pt_pin};`
                     var beanNum = ($.beanNum && $.beanNum > 0) ? "\r剩余豆豆：" + $.beanNum : "";
-                    var data1 = await allEnvs(pt_key, 2);
+                    var data1 = await allEnvs($.pt_key, 2);
                     if (data1.length > 0) {
                         console.log("pt_key重复，已跳过写入环境变量。");
                         await sendNotify(`提交的CK重复啦！`)
                         return;
                     } else {
-                        var data2 = await allEnvs(pt_pin, 2);
+                        var data2 = await allEnvs($.pt_pin, 2);
                         var c = {
                             Name: "JD_COOKIE",
                             Enable: true,
@@ -180,15 +180,15 @@ var pt_pin = null;
                             c.QLPanelEnvs = data2[0].QLPanelEnvs;
                             if (UPDATE_COOKIE_NOTIFY) {
                                 await sendNotify(`Cookie更新通知
-用户ID：${user_id}
-pt_pin：${pt_pin}`, true)
+用户：${user_id}
+昵称：${$.nickName}`, true)
                             }
                         } else {
                             c.Id = null;
                             if (ADD_COOKIE_NOTIFY) {
                                 await sendNotify(`Cookie新增通知
-用户ID：${user_id}
-pt_pin：${pt_pin}`, true)
+用户：${user_id}
+昵称：${$.nickName}`, true)
                             }
                             jdCookies.push(cookie)
                             console.log("全新韭菜上线拉！");
@@ -367,7 +367,7 @@ function TotalBean(cookie) {
                             console.log("TotalBean 检测有效");
                             console.log(JSON.stringify(data.data));
                             $.nickName = (data.data.userInfo.baseInfo.nickname) || data.data.userInfo.baseInfo.curPin || $.nickName;
-                            pt_pin = data.data.userInfo.baseInfo.curPin || pt_pin;
+                            $.pt_pin = $.nickName
                         } else {
                             $.nickName = decodeURIComponent($.UserName);
                             console.log("Debug Code:" + data['retcode']);

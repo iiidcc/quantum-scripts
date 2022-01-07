@@ -367,7 +367,7 @@ function TotalBean(cookie) {
                             console.log("TotalBean 检测有效");
                             console.log(JSON.stringify(data.data));
                             $.nickName = (data.data.userInfo.baseInfo.nickname) || data.data.userInfo.baseInfo.curPin || $.nickName;
-                            $.pt_pin = $.nickName
+                            $.pt_pin = data.data.userInfo.baseInfo.curPin;
                         } else {
                             $.nickName = decodeURIComponent($.UserName);
                             console.log("Debug Code:" + data['retcode']);

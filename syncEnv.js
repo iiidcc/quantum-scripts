@@ -47,7 +47,9 @@ let isSystem = process.env.IsSystem == "true";
             if (qlenv == undefined) {
                 continue;
             }
-            ids.push(qlenv._id)
+            if (qlenv.name == "JD_COOKIE") {
+                ids.push(qlenv._id)
+            }
             if (qlenv.name == "JD_COOKIE" && qlenv.status == 0) {
                 var pt_pin = qlenv.value.match(/pt_pin=([^; ]+)(?=;?)/)[1]
                 try {
@@ -108,7 +110,6 @@ let isSystem = process.env.IsSystem == "true";
             notifyMessage += "\r" + message[i]
         }
     }
-
     if (!isSystem) {
         sendNotify(notifyMessage, true)
     }

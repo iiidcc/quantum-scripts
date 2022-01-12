@@ -18,7 +18,7 @@ const api = got.extend({
     prefixUrl: prefixUrl,
     retry: { limit: 0 },
 });
-console.log("脚本库更新时间：2022年1月6日 14点06分");
+console.log("脚本库更新时间：2022年1月12日 9点15分");
 // 获取青龙面板信息
 module.exports.getQLPanels = async () => {
     const body = await api({

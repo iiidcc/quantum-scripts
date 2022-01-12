@@ -60,7 +60,7 @@ const { addEnvs, allEnvs, sendNotify
             return;
         }
         if (Phone && VerifyCode) {
-            var message = `手机号：${Phone}，短信验证码：${VerifyCode}，验证中请骚等。。`
+            var message = `收到您的短信验证码了，验证中请骚等`
             await sendNotify(message);
             console.log(message)
             await verifyCode();
@@ -69,7 +69,7 @@ const { addEnvs, allEnvs, sendNotify
                 return false;
             }
         } else if (Phone) {
-            console.log(`收到${user_id}手机号,${Phone}，开始请求nvjdc 服务。`);
+            console.log(`收到${user_id}手机号,${Phone}，开始请求nvjdc 服务`);
             await sendNotify("收到您的手机号了，正在请求。。。");
             await SendSMS();
             for (var i = 0; i < 5; i++) {
@@ -85,7 +85,7 @@ const { addEnvs, allEnvs, sendNotify
                 }
             }
             if (!$.AutoCaptchaSuccess) {
-                await sendNotify("获取失败了，请尝试其他CK获取方法吧！");
+                await sendNotify("获取失败了，可能是配置的NVJDC_URL不正常。");
             }
             else {
                 await sendNotify("很好，请回复6位验证码：");
